@@ -172,3 +172,5 @@ Die Kernidee steht. Folgende Punkte werden bei der Umsetzung konkretisiert:
 - Ob andere Zufallsmonster während besonderer Begegnungen pausieren.
 
 **Öffne die nächste Tür. Aber achte darauf, was hinter dir passiert.**
+
+*Ja, dieses Text ist KI generiert, die Ideen und Commands habe aber ich selber entdeckt. KI dient hier, um meine Ideen formulieren zu können in einem tollen MD Format!
