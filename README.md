@@ -173,4 +173,4 @@ Die Kernidee steht. Folgende Punkte werden bei der Umsetzung konkretisiert:
 
 **Öffne die nächste Tür. Aber achte darauf, was hinter dir passiert.**
 
-*Ja, dieses Text ist KI generiert, die Ideen und Commands habe aber ich selber entdeckt. KI dient hier, um meine Ideen formulieren zu können in einem tollen MD Format!*
+*Ja, dieses Text ist KI generiert, die Ideen und Commands haben aber wir selber entdeckt. KI dient hier, um unsere Ideen formulieren zu können in einem tollen MD Format!*
