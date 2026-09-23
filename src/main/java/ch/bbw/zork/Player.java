@@ -17,6 +17,17 @@ public class Player {
         inventory.add(item);
     }
 
+    public boolean removeItem(ItemType type) {
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).getType() == type) {
+                inventory.remove(i);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public boolean hasItem(ItemType type) {
         for (Item item : inventory) {
             if (item.getType() == type) {
