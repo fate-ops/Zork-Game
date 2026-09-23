@@ -27,10 +27,21 @@ public class Player {
     }
 
     public String inventoryDescription() {
-        StringBuilder description = new StringBuilder("You are carrying:\n");
-        for (Item item : inventory) {
-            description.append("  ").append(item.getName()).append(" (").append(item.getType()).append(")\n");
+        if (inventory.isEmpty()) {
+            return "Your inventory is empty.";
         }
+
+        StringBuilder description = new StringBuilder("You are carrying:\n");
+
+        for (Item item : inventory) {
+            description
+                    .append("- ")
+                    .append(item.getName())
+                    .append(" (")
+                    .append(item.getType())
+                    .append(")\n");
+        }
+
         return description.toString();
     }
 
