@@ -22,7 +22,6 @@ public class MonsterController {
         this(player, random, System::nanoTime);
     }
 
-    // Eine austauschbare Uhr erlaubt Tests ohne echte Wartezeit.
     MonsterController(
             Player player,
             Random random,
@@ -34,7 +33,6 @@ public class MonsterController {
     }
 
     public void onEnter(Room room) {
-        // Keine Monster im Shop und keine ueberlappenden Begegnungen.
         if (room.getNumber() == JeffShop.ROOM_NUMBER
                 || rushActive
                 || screechActive
@@ -56,7 +54,6 @@ public class MonsterController {
         }
     }
 
-    // Wird regelmaessig aufgerufen, auch ohne Command-Eingabe.
     public boolean update() {
         long now = clock.getAsLong();
 
@@ -71,7 +68,6 @@ public class MonsterController {
                 );
 
             } else {
-                // Toedlicher Schaden, sofern kein Crucifix aktiv ist.
                 player.takeDamage(player.getHp());
 
                 if (!player.isAlive()) {
@@ -81,9 +77,8 @@ public class MonsterController {
                     );
 
                 } else {
-                    System.out.println(
-                            "Your crucifix saved you from Rush."
-                    );
+                    System.out.println("OH MAN. CLOSE ONE");
+                    System.out.println("Rush has been crucified.");
                 }
             }
 
@@ -108,6 +103,10 @@ public class MonsterController {
                 System.out.println(
                         "OUCH. Stupid little crap. I better get out of here"
                 );
+
+            } else {
+                System.out.println("GO AWAY!");
+                System.out.println("Screech has been crucified");
             }
 
             return true;
@@ -116,9 +115,7 @@ public class MonsterController {
         return false;
     }
 
-    // true: Command wurde hier behandelt und geht nicht weiter an Game.
     public boolean handleCommand(Command command) {
-        // Zu spaete Eingaben verhindern keinen bereits faelligen Treffer.
         update();
 
         if (!player.isAlive()) {
