@@ -5,6 +5,10 @@ import java.util.List;
 
 public class Player {
 
+    public static final int MAX_HP = 100;
+    public static final int BANDAGE_HEAL = 15;
+    public static final int BATTERY_RECHARGE = 30;
+
     private int hp;
     private int coins;
     private List<Item> inventory;
@@ -15,13 +19,15 @@ public class Player {
     private long flashlightLastUpdateNanos = 0;
 
     public Player() {
-        this.hp = 100;
+        this.hp = MAX_HP;
         this.coins = 0;
         this.inventory = new ArrayList<>();
     }
 
     public void addItem(Item item) {
-        inventory.add(item);
+        if (item != null) {
+            inventory.add(item);
+        }
     }
 
     public boolean removeItem(ItemType type) {
@@ -73,6 +79,7 @@ public class Player {
 
         if (flashlightBattery == 0) {
             flashlightOn = false;
+            flashlightActiveNanos = 0;
         }
     }
 
@@ -135,6 +142,31 @@ public class Player {
         return description.toString();
     }
 
+    // Verbraucht nur dann eine Bandage, wenn tatsaechlich geheilt wird.
+    public int useBandage() {
+        if (!isAlive() || hp >= MAX_HP || !removeItem(ItemType.BANDAID)) {
+            return 0;
+        }
+
+        int healed = Math.min(BANDAGE_HEAL, MAX_HP - hp);
+        hp += healed;
+        return healed;
+    }
+
+    public int useBattery() {
+        updateFlashlightBattery();
+
+        if (!hasItem(ItemType.FLASHLIGHT)
+                || flashlightBattery >= 100
+                || !removeItem(ItemType.BATTERY)) {
+            return 0;
+        }
+
+        int charged = Math.min(BATTERY_RECHARGE, 100 - flashlightBattery);
+        flashlightBattery += charged;
+        return charged;
+    }
+
     public int getHp() {
         return hp;
     }
@@ -144,11 +176,11 @@ public class Player {
     }
 
     public void addCoins(int amount) {
-        this.coins += amount;
+        this.coins += Math.max(0, amount);
     }
 
     public void takeDamage(int amount) {
-        this.hp -= amount;
+        this.hp -= Math.max(0, amount);
 
         if (this.hp < 0) {
             this.hp = 0;
