@@ -13,6 +13,8 @@ public class Player {
     private int coins;
     private List<Item> inventory;
 
+    private boolean crucifixProtection = false;
+
     private boolean flashlightOn = false;
     private int flashlightBattery = 100;
     private long flashlightActiveNanos = 0;
@@ -65,7 +67,7 @@ public class Player {
         flashlightActiveNanos += now - flashlightLastUpdateNanos;
         flashlightLastUpdateNanos = now;
 
-        long drainInterval = 30_000_000_000L; // 30 Sekunden
+        long drainInterval = 30_000_000_000L;
         long intervals = flashlightActiveNanos / drainInterval;
 
         if (intervals > 0) {
@@ -113,12 +115,72 @@ public class Player {
         return flashlightBattery;
     }
 
+    // Eine gekaufte Flashlight ersetzt die alte und ist voll geladen.
+    public void replaceFlashlight() {
+        removeItem(ItemType.FLASHLIGHT);
+
+        flashlightOn = false;
+        flashlightBattery = 100;
+        flashlightActiveNanos = 0;
+        flashlightLastUpdateNanos = 0;
+
+        addItem(new Item(ItemType.FLASHLIGHT, "Flashlight"));
+    }
+
+    public int useBattery() {
+        updateFlashlightBattery();
+
+        if (!hasItem(ItemType.FLASHLIGHT)
+                || flashlightBattery >= 100
+                || !removeItem(ItemType.BATTERY)) {
+            return 0;
+        }
+
+        int charged = Math.min(
+                BATTERY_RECHARGE,
+                100 - flashlightBattery
+        );
+
+        flashlightBattery += charged;
+        return charged;
+    }
+
+    public int useBandage() {
+        // Bei vollen HP wird die Bandage nicht entfernt.
+        if (!isAlive() || hp >= MAX_HP || !removeItem(ItemType.BANDAID)) {
+            return 0;
+        }
+
+        int healed = Math.min(BANDAGE_HEAL, MAX_HP - hp);
+        hp += healed;
+
+        return healed;
+    }
+
+    public boolean hasCrucifixProtection() {
+        return crucifixProtection;
+    }
+
+    public boolean activateCrucifix() {
+        // Aktiver Schutz kann nicht durch weitere Items gestapelt werden.
+        if (!isAlive()
+                || crucifixProtection
+                || !removeItem(ItemType.CRUCIFIX)) {
+            return false;
+        }
+
+        crucifixProtection = true;
+        return true;
+    }
+
     public String inventoryDescription() {
         if (inventory.isEmpty()) {
             return "Your inventory is empty.";
         }
 
-        StringBuilder description = new StringBuilder("You are carrying:\n");
+        StringBuilder description = new StringBuilder(
+                "You are carrying:\n"
+        );
 
         for (Item item : inventory) {
             description
@@ -142,31 +204,6 @@ public class Player {
         return description.toString();
     }
 
-    // Verbraucht nur dann eine Bandage, wenn tatsaechlich geheilt wird.
-    public int useBandage() {
-        if (!isAlive() || hp >= MAX_HP || !removeItem(ItemType.BANDAID)) {
-            return 0;
-        }
-
-        int healed = Math.min(BANDAGE_HEAL, MAX_HP - hp);
-        hp += healed;
-        return healed;
-    }
-
-    public int useBattery() {
-        updateFlashlightBattery();
-
-        if (!hasItem(ItemType.FLASHLIGHT)
-                || flashlightBattery >= 100
-                || !removeItem(ItemType.BATTERY)) {
-            return 0;
-        }
-
-        int charged = Math.min(BATTERY_RECHARGE, 100 - flashlightBattery);
-        flashlightBattery += charged;
-        return charged;
-    }
-
     public int getHp() {
         return hp;
     }
@@ -176,18 +213,41 @@ public class Player {
     }
 
     public void addCoins(int amount) {
-        this.coins += Math.max(0, amount);
+        coins += Math.max(0, amount);
+    }
+
+    public boolean spendCoins(int amount) {
+        if (amount < 0 || coins < amount) {
+            return false;
+        }
+
+        coins -= amount;
+        return true;
     }
 
     public void takeDamage(int amount) {
-        this.hp -= Math.max(0, amount);
+        if (amount <= 0 || !isAlive()) {
+            return;
+        }
 
-        if (this.hp < 0) {
-            this.hp = 0;
+        // Blockiert genau einen Treffer, egal wie hoch der Schaden ist.
+        if (crucifixProtection) {
+            crucifixProtection = false;
+
+            System.out.println(
+                    "Your crucifix blocked the damage. Its protection is gone."
+            );
+            return;
+        }
+
+        hp -= amount;
+
+        if (hp < 0) {
+            hp = 0;
         }
     }
 
     public boolean isAlive() {
-        return this.hp > 0;
+        return hp > 0;
     }
 }
