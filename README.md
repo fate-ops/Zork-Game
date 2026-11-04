@@ -1,10 +1,10 @@
 # 🚪 DOORS: Terminal Edition
 
-> **50 Türen. Ein Hotel. Hinter jeder Tür eine neue Entscheidung.**
+> **50 Türen. Ein Hotel. Und du bist nicht allein.**
 
 Ein textbasiertes Survival-Horrorspiel in Java, inspiriert von Roblox DOORS und entwickelt als Schulprojekt auf Basis des Zork-Templates.
 
-Erkunde Räume, sammle Gegenstände und achte auf Warnsignale. Das Ziel: Tür 50 erreichen, Figures Bibliotheksrätsel lösen und lebend entkommen.
+Durchsuche Räume, sammle Gegenstände und achte auf Warnsignale. Überlebe Rush, reagiere auf Screech und entkomme Seek. Das endgültige Ziel: Figures Library bei Tür 50 erreichen und das Hotel verlassen.
 
 ---
 
