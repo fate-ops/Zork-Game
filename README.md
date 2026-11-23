@@ -4,20 +4,18 @@
 
 Ein textbasiertes Survival-Horrorspiel in Java, inspiriert von Roblox DOORS und entwickelt als Schulprojekt auf Basis des Zork-Templates.
 
-Durchsuche Räume, sammle Gegenstände und achte auf Warnsignale. Überlebe Rush, reagiere auf Screech und entkomme Seek. Das endgültige Ziel: Figures Library bei Tür 50 erreichen und das Hotel verlassen.
+Durchsuche Räume, sammle Gegenstände und achte auf Warnsignale. Überlebe Rush, reagiere auf Screech, entkomme Seek und knacke in Figures Library bei Tür 50 den PIN-Code, um das Hotel zu verlassen.
 
 ---
 
 ## Projektstatus
 
-Der aktuelle Entwicklungsstand umfasst die Räume **1–49**, zufällige Raumlayouts und Funde, Jeffs Shop sowie die Begegnungen mit Rush, Screech und Seek.
-
-**Tür 50 mit Figure ist noch nicht spielbar.** In Raum 49 endet vorerst die Strecke, ohne dass ein Sieg ausgelöst wird.
+Das Spiel ist von Raum 1 bis zum Ausgang durchspielbar: Räume **1–50**, zufällige Raumlayouts und Funde, Jeffs Shop, die Begegnungen mit Rush, Screech, Seek und Figure sowie das Bücher- und PIN-Rätsel in der Grand Library.
 
 ### Umgesetzt
 
 - [x] Spieler mit HP, Coins und Inventar
-- [x] Räume 1–49 mit Vorwärts- und Rückwärtsverbindungen
+- [x] Räume 1–50 mit Vorwärts- und Rückwärtsverbindungen
 - [x] Fester Einführungsraum mit Key und verschlossener Tür
 - [x] Zufällige normale Raumlayouts und Rewards
 - [x] ASCII-Anzeige beim Betreten und mit `look`
@@ -29,16 +27,16 @@ Der aktuelle Entwicklungsstand umfasst die Räume **1–49**, zufällige Raumlay
 - [x] Rush mit Warnung, Timer und Verstecken
 - [x] Screech mit Reaktionsfrist und Schaden
 - [x] Seek mit Cutscene, Guiding Light und Zeitlimit
-- [x] Deathscreens für die drei Monster
+- [x] Figure mit Warnung, Timer und Verstecken
+- [x] Figures Library bei Tür 50 mit Bücher- und Symbolrätsel
+- [x] PIN-Eingabe und erfolgreicher Spielabschluss
+- [x] Deathscreens für alle Monster
 - [x] Monster-Timer laufen auch ohne Eingabe weiter
 - [x] Erste JUnit-Tests für Räume
 
-### Noch geplant
+### Noch offen
 
-- [ ] Figures Library bei Tür 50
-- [ ] Bücher- und Symbolrätsel
-- [ ] PIN-Eingabe und erfolgreicher Spielabschluss
-- [ ] Weitere Tests und Balancing
+- [ ] Weitere Tests (zum Beispiel für `LibraryPuzzle`) und Balancing
 - [ ] Ältere Diagramme und Detaildokumentationen aktualisieren
 
 ## Spielablauf
@@ -53,7 +51,7 @@ Der aktuelle Entwicklungsstand umfasst die Räume **1–49**, zufällige Raumlay
 | Räume 35–45 | Seek-Verfolgung mit Links-/Rechts-Entscheidungen |
 | Raum 46 | Ziel der Seek-Flucht |
 | Räume 46–49 | Normale Erkundung nach der Verfolgung |
-| Raum 50 | Geplantes Figure-Finale |
+| Raum 50 | Grand Library: Bücher finden, PIN knacken, Figure entkommen |
 
 Nach der Flucht vor Seek ist der Rückweg in die Verfolgungsstrecke versperrt. Innerhalb der normalen Abschnitte kann der Spieler mit `return` zurückgehen.
 
@@ -78,7 +76,7 @@ Zusätzlich gibt es besondere Layouts:
 | :--- | :--- |
 | Jeffs Shop | Fester Verkaufsraum bei Tür 25, definiert in `JeffShop` |
 | `SEEK_RUN` | Wiederverwendetes Layout für die Entscheidungen während Seek |
-| `GRAND_LIBRARY` | Vorbereitete Map für das spätere Figure-Finale |
+| `GRAND_LIBRARY` | Layout der grossen Bibliothek bei Tür 50 |
 
 Die übrigen Layouts sind in [`RoomLayouts.java`](src/main/java/ch/bbw/zork/RoomLayouts.java) definiert.
 
@@ -110,7 +108,7 @@ Die Würfe sind unabhängig. Ein Raum kann mehrere Funde enthalten oder leer sei
 
 Bei einem Coin-Fund erhält der Spieler **5–25 Coins**. Eine Flashlight liegt garantiert in einem zufälligen Raum zwischen **2 und 8**.
 
-Eine verschlossene Vorwärtstür hat immer einen zugehörigen Key im aktuellen Raum. Der letzte vorläufige Raum erhält kein zusätzliches Schloss. Jeffs Shop und die Seek-Strecke enthalten keine zufälligen Rewards.
+Eine verschlossene Vorwärtstür hat immer einen zugehörigen Key im aktuellen Raum. Raum 49 erhält kein zusätzliches Schloss, damit der Weg zur Grand Library immer offen ist. Jeffs Shop, die Seek-Strecke und die Grand Library enthalten keine zufälligen Rewards.
 
 Layouts und Funde werden **einmal beim Spielstart** erzeugt. Wiederholtes Suchen oder Zurückgehen würfelt keine neuen Gegenstände aus.
 
@@ -188,9 +186,9 @@ Der Shop kann später erneut besucht werden, solange er noch erreichbar ist.
 
 Monsterchancen werden beim Betreten eines Raums geprüft, auch beim Zurückgehen. Wiederholtes `search` oder `look` löst keinen neuen Erscheinungswurf aus.
 
-Pro Raumbetreten beginnt höchstens eine Begegnung. Ab Raum 5 wird zuerst Rush geprüft. Erscheint Rush nicht, kann in einem dunklen Raum Screech auftreten.
+Pro Raumbetreten beginnt höchstens eine Begegnung. Ab Raum 5 wird zuerst Rush geprüft. Erscheint Rush nicht, kann in einem dunklen Raum Screech auftreten. Figure erscheint ausschliesslich in der Grand Library bei Tür 50.
 
-Während einer laufenden Rush- oder Screech-Begegnung ist der Raumwechsel gesperrt.
+Während einer laufenden Rush-, Screech- oder Figure-Begegnung ist der Raumwechsel gesperrt.
 
 ### Rush
 
@@ -281,6 +279,40 @@ Seek caught you
 The guiding light shows you where to go with a "*", trust it.
 ```
 
+### Figure
+
+Figure bewacht die Grand Library bei Tür 50. Er kann nichts sehen, hört dafür aber alles. Wer in der Bibliothek Lärm macht, weckt ihn.
+
+**Auslöser:**
+
+- Jedes erfolgreiche `findbook` hat eine **15-%-Chance**, Figure aufmerksam zu machen.
+- Jede Eingabe eines **falschen, aber korrekt formatierten PINs** (sechs Ziffern) weckt Figure sicher.
+- Eine falsch formatierte Eingabe (zum Beispiel zu wenige Ziffern) löst Figure nicht aus.
+
+Die Warnung lautet:
+
+```text
+Figure heard you! Type 'hide' within 4 seconds!
+```
+
+Der Spieler hat **4 Sekunden**, um `hide` einzugeben.
+
+- Im Versteck ist nur `unhide` erlaubt. Während Figure noch in der Nähe ist, bleibt der Spieler versteckt.
+- Wer sich rechtzeitig versteckt hat, überlebt. Nach Ablauf des Timers erscheint:
+
+```text
+Figure walked past. You can 'unhide' now.
+```
+
+- Wer nicht rechtzeitig versteckt ist, stirbt. Während die Warnung läuft, sind ausser `hide` keine anderen Befehle möglich (`Figure is coming. Type 'hide'!`).
+
+Deathscreen:
+
+```text
+Figure caught you.
+Next time, hide as soon as you hear him coming.
+```
+
 ## Crucifix-Schutz
 
 Mit `use crucifix` wird ein Crucifix aus dem Inventar verbraucht und der Schutz aktiviert.
@@ -307,6 +339,14 @@ Screech has been crucified
 
 **Rush und Screech werden dadurch nicht dauerhaft entfernt.** In späteren Räumen können sie erneut erscheinen.
 
+### Gegen Figure
+
+```text
+Your crucifix blocked Figure's attack.
+```
+
+Der Schutz ist danach verbraucht. Figure kann bei einem späteren Fehler erneut zuschlagen.
+
 ### Gegen Seek
 
 Läuft der Seek-Timer bei aktivem Schutz ab, blockiert das Crucifix den Fangversuch:
@@ -317,6 +357,39 @@ Seek has been slowed down for 10 Seconds. KEEP RUNNING!
 ```
 
 Ab diesem Moment erhält der Spieler **10 weitere Sekunden** für die verbleibende Strecke. Seek verfolgt ihn weiter. Der Crucifix-Schutz ist danach verbraucht.
+
+## Tür 50 – Figure und die Grand Library
+
+Raum 50 ist die grosse Bibliothek. Sie ist immer unverschlossen und enthält keine Coins oder Items. Hier gibt es einen einzigen Weg hinaus: den sechsstelligen PIN des Great Gate herausfinden.
+
+### Das Rätsel
+
+Beim Spielstart wird das Rätsel zufällig erzeugt:
+
+- Es gibt **8 Symbole**: `MOON`, `EYE`, `STAR`, `KEY`, `CROWN`, `FLAME`, `DIAMOND`, `CROSS`.
+- Jedes Symbol gehört zu einer **Ziffer von 0 bis 9**.
+- Der PIN besteht aus **6 dieser Symbole** in einer festen, zufälligen Reihenfolge. Die übrigen **2 Symbole** sind Ablenkung und gehören nicht zum PIN.
+
+### Ablauf
+
+1. `source` zeigt die sechs Symbole in der Reihenfolge des PINs.
+2. `findbook` liefert bei jedem Aufruf ein neues Buch mit einem Hinweis wie `STAR = 7`. Jedes der 8 Bücher kann nur einmal gefunden werden.
+3. `notes` zeigt alle bisher gefundenen Hinweise.
+4. Aus Reihenfolge und Ziffern setzt der Spieler den PIN zusammen, etwa Symbol 1 → Ziffer, Symbol 2 → Ziffer und so weiter.
+5. `code <sechs Ziffern>` gibt den PIN ein. Führende Nullen müssen mitgeschrieben werden.
+
+Reihenfolge und Ziffern bleiben während eines Spieldurchgangs gleich. Der Spieler muss also nicht alle 8 Bücher lesen, aber jedes der 6 PIN-Symbole braucht sein Buch. Bei jedem `findbook` besteht das Risiko, Figure zu wecken (siehe Figure).
+
+### Ergebnis
+
+| Eingabe | Folge |
+| :--- | :--- |
+| Richtiger PIN | `The Great Gate unlocks.` / `You escaped the hotel!` – das Spiel endet erfolgreich |
+| Falscher PIN (sechs Ziffern) | `The lock clicks. The PIN is wrong.` – Figure wird geweckt |
+| Falsches Format | Hinweis `Use: code <six digits>`; kein Risiko |
+| `findbook`, wenn alle Bücher gefunden sind | Hinweis, die Notizen zu prüfen; kein Risiko |
+
+Die Befehle `source`, `findbook`, `notes` und `code` funktionieren nur in Raum 50.
 
 ## Commands
 
@@ -338,11 +411,15 @@ Ab diesem Moment erhält der Spieler **10 weitere Sekunden** für die verbleiben
 | `use crucifix` | Einmaligen Schutz aktivieren |
 | `use bandage` | Bis zu 15 HP heilen |
 | `use battery` | Flashlight um bis zu 30 Prozentpunkte laden |
-| `hide` | Während einer Rush-Warnung verstecken |
-| `unhide` | Versteck nach Rushs Durchlauf verlassen |
+| `hide` | Während einer Rush- oder Figure-Warnung verstecken |
+| `unhide` | Versteck nach dem Durchlauf des Monsters verlassen |
 | `peek` | Screech verscheuchen |
 | `left` | Während Seek die linke Tür wählen |
 | `right` | Während Seek die rechte Tür wählen |
+| `source` | In Raum 50: Symbole in PIN-Reihenfolge anzeigen |
+| `findbook` | In Raum 50: ein Buch mit Hinweis finden |
+| `notes` | In Raum 50: gefundene Hinweise anzeigen |
+| `code <6 Ziffern>` | In Raum 50: PIN am Great Gate eingeben |
 | `help` | Befehlsübersicht anzeigen |
 | `quit` | Spiel beenden; im Versteck gesperrt |
 
@@ -356,26 +433,12 @@ Die Befehlseingabe wird in einem eigenen Thread gelesen und über eine Queue an 
 
 Die Spielschleife prüft die Begegnungen regelmässig. Dadurch laufen Warnfristen, Cutscene und Seek-Timer auch dann weiter, wenn der Spieler nichts eingibt.
 
-Nach einem tödlichen Treffer erscheint der passende Deathscreen und das Programm endet normal mit Exit-Code 0. Ein neuer Versuch wird durch erneutes Starten von `Zork2` begonnen.
+Das Spiel endet auf zwei Arten:
 
-## Tür 50 – Figure und die Grand Library
+- **Sieg:** Der richtige PIN am Great Gate in Raum 50 beendet das Spiel mit `You escaped the hotel!`.
+- **Niederlage:** Nach einem tödlichen Treffer erscheint der passende Deathscreen.
 
-**Dieser Abschnitt ist geplant und noch nicht spielbar.**
-
-Figure bewacht die grosse Bibliothek. Er kann nichts sehen, hört dafür besonders gut. Der Spieler soll Bücher finden und den sechsstelligen PIN des Great Gate entschlüsseln.
-
-Geplanter Ablauf:
-
-1. `source` zeigt sechs Symbole in der benötigten Reihenfolge.
-2. `findbook` liefert Hinweise aus insgesamt acht Büchern.
-3. Die Bücher ordnen Symbolen einzelne Ziffern zu.
-4. Der Spieler setzt daraus den sechsstelligen PIN zusammen.
-5. Mit `code` wird die Lösung eingegeben.
-6. Der richtige PIN öffnet den Ausgang und beendet das Spiel erfolgreich.
-
-Bei `findbook` ist eine 15-%-Chance vorgesehen, Figures Aufmerksamkeit zu wecken. Dann muss der Spieler rechtzeitig `hide` eingeben.
-
-Reaktionsfristen und die Folgen falscher Codeeingaben werden bei der Umsetzung festgelegt.
+In beiden Fällen endet das Programm normal mit Exit-Code 0. Ein neuer Versuch wird durch erneutes Starten von `Zork2` begonnen.
 
 ## Projekt starten
 
@@ -406,8 +469,9 @@ java -cp target/classes ch.bbw.zork.Zork2
 | `Room` | Raumnummer, Layout, Ausgänge, Funde, Dunkelheit und Schloss |
 | `RoomLayouts` | ASCII-Layouts für normale Räume, Seek und die Grand Library |
 | `JeffShop` | Shop-Layout, Angebot, Preise und Käufe |
-| `MonsterController` | Rush, Screech, Verstecken und Reaktionsfristen |
+| `MonsterController` | Rush, Screech, Figure, Verstecken und Reaktionsfristen |
 | `SeekController` | Cutscene, Guiding Light, Richtungswahl und Chase-Timer |
+| `LibraryPuzzle` | Symbole, Bücher, Notizen und PIN-Prüfung der Grand Library |
 | `Item` | Gegenstand mit Name und Typ |
 | `ItemType` | Verfügbare Gegenstandstypen |
 | `Parser` | Texteingaben lesen und in Commands umwandeln |
@@ -421,7 +485,7 @@ java -cp target/classes ch.bbw.zork.Zork2
 - [Räumlichkeiten-UML](diagrams/doors-raeumlichkeiten-uml.png)
 - [Klassendiagramm](diagrams/doors-klassendiagramm.png)
 
-Die ergänzenden Dokumente und Diagramme enthalten teilweise frühere Planungsstände. Die neuen Klassen und Mechaniken müssen dort noch nachgeführt werden.
+Die ergänzenden Dokumente und Diagramme enthalten teilweise frühere Planungsstände. Die neuen Klassen (`MonsterController`, `SeekController`, `JeffShop`, `LibraryPuzzle`) und Mechaniken sind dort noch nicht nachgeführt.
 
 ## Herkunft und KI-Unterstützung
 
