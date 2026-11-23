@@ -108,7 +108,7 @@ Die Würfe sind unabhängig. Ein Raum kann mehrere Funde enthalten oder leer sei
 
 Bei einem Coin-Fund erhält der Spieler **5–25 Coins**. Eine Flashlight liegt garantiert in einem zufälligen Raum zwischen **2 und 8**.
 
-Eine verschlossene Vorwärtstür hat immer einen zugehörigen Key im aktuellen Raum. Raum 49 erhält kein zusätzliches Schloss, damit der Weg zur Grand Library immer offen ist. Jeffs Shop, die Seek-Strecke und die Grand Library enthalten keine zufälligen Rewards.
+Eine verschlossene Vorwärtstür hat immer einen zugehörigen Key im aktuellen Raum. Das gilt für alle normalen Räume bis einschliesslich Raum 49, die Grand Library ist dadurch immer erreichbar. Jeffs Shop, die Seek-Strecke und die Grand Library enthalten keine zufälligen Rewards.
 
 Layouts und Funde werden **einmal beim Spielstart** erzeugt. Wiederholtes Suchen oder Zurückgehen würfelt keine neuen Gegenstände aus.
 
@@ -186,7 +186,7 @@ Der Shop kann später erneut besucht werden, solange er noch erreichbar ist.
 
 Monsterchancen werden beim Betreten eines Raums geprüft, auch beim Zurückgehen. Wiederholtes `search` oder `look` löst keinen neuen Erscheinungswurf aus.
 
-Pro Raumbetreten beginnt höchstens eine Begegnung. Ab Raum 5 wird zuerst Rush geprüft. Erscheint Rush nicht, kann in einem dunklen Raum Screech auftreten. Figure erscheint ausschliesslich in der Grand Library bei Tür 50.
+Pro Raumbetreten beginnt höchstens eine Begegnung. Ab Raum 5 wird zuerst Rush geprüft. Erscheint Rush nicht, kann in einem dunklen Raum Screech auftreten. Figure erscheint ausschliesslich in der Grand Library bei Tür 50. In der Grand Library selbst erscheinen weder Rush noch Screech.
 
 Während einer laufenden Rush-, Screech- oder Figure-Begegnung ist der Raumwechsel gesperrt.
 
