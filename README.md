@@ -1,176 +1,436 @@
 # 🚪 DOORS: Terminal Edition
 
-### 100 Türen. Ein Ausweg. Keine zweite Chance.
+> **50 Türen. Ein Hotel. Und du bist nicht allein.**
 
-**Solo-Storygame · Survival-Horror · Textbefehle · Rätsel**
+Ein textbasiertes Survival-Horrorspiel in Java, inspiriert von Roblox DOORS und entwickelt als Schulprojekt auf Basis des Zork-Templates.
 
-Ein Schulprojekt, inspiriert von Roblox DOORS.
+Durchsuche Räume, sammle Gegenstände und achte auf Warnsignale. Überlebe Rush, reagiere auf Screech und entkomme Seek. Das endgültige Ziel: Figures Library bei Tür 50 erreichen und das Hotel verlassen.
 
+---
 
-> Das Licht flackert. Hinter dir wird es laut. Vor dir liegt eine verschlossene Tür.
-> Du hast nur wenige Sekunden, um den richtigen Befehl einzugeben.
-> **Was tust du?**
+## Projektstatus
 
-## 🎮 Unsere Projektidee
+Der aktuelle Entwicklungsstand umfasst die Räume **1–49**, zufällige Raumlayouts und Funde, Jeffs Shop sowie die Begegnungen mit Rush, Screech und Seek.
 
-Wir entwickeln ein textbasiertes Survival-Horrorspiel für das Terminal. Der Spieler muss 100 Türen überleben, Räume erkunden, Gegenstände sammeln und verschiedenen Monstern entkommen. Die Steuerung erfolgt über Textbefehle. Hinweise im Terminal und ASCII-Darstellungen helfen dabei, Gefahren zu erkennen und Rätsel zu lösen.
+**Tür 50 mit Figure ist noch nicht spielbar.** In Raum 49 endet vorerst die Strecke, ohne dass ein Sieg ausgelöst wird.
 
-Unser Ziel ist es, die Spannung von DOORS mit einfachen Mitteln ins Terminal zu bringen. Aufmerksamkeit, schnelle Reaktionen und kluger Umgang mit Items entscheiden darüber, ob der Spieler den Aufzug erreicht.
+### Umgesetzt
 
-**Projektstatus:** Konzeptphase. Diese README beschreibt die geplanten Funktionen und Spielregeln.
+- [x] Spieler mit HP, Coins und Inventar
+- [x] Räume 1–49 mit Vorwärts- und Rückwärtsverbindungen
+- [x] Fester Einführungsraum mit Key und verschlossener Tür
+- [x] Zufällige normale Raumlayouts und Rewards
+- [x] ASCII-Anzeige beim Betreten und mit `look`
+- [x] Dunkelheit und erschwerte Orientierung
+- [x] Flashlight mit Ein-/Aus-Zustand und Batterieverbrauch
+- [x] Verbrauchbare Batterien und Bandagen
+- [x] Jeffs Shop in Raum 25
+- [x] Lockpicks und einmaliger Crucifix-Schutz
+- [x] Rush mit Warnung, Timer und Verstecken
+- [x] Screech mit Reaktionsfrist und Schaden
+- [x] Seek mit Cutscene, Guiding Light und Zeitlimit
+- [x] Deathscreens für die drei Monster
+- [x] Monster-Timer laufen auch ohne Eingabe weiter
+- [x] Erste JUnit-Tests für Räume
 
-## ❤️ Spieler und Ressourcen
+### Noch geplant
 
-| Ressource | Bedeutung |
+- [ ] Figures Library bei Tür 50
+- [ ] Bücher- und Symbolrätsel
+- [ ] PIN-Eingabe und erfolgreicher Spielabschluss
+- [ ] Weitere Tests und Balancing
+- [ ] Ältere Diagramme und Detaildokumentationen aktualisieren
+
+## Spielablauf
+
+| Abschnitt | Inhalt |
 | :--- | :--- |
-| HP | Lebenspunkte des Spielers. Bei 0 HP endet der Versuch. |
-| Coins | Können in Räumen gefunden und bei Jeff ausgegeben werden. |
-| Items | Helfen bei der Erkundung, heilen oder schützen vor Schaden. |
-| Schlüssel | Werden benötigt, wenn eine Tür verschlossen ist. |
+| Raum 1 | Fester Einstieg: Key finden und die erste verschlossene Tür öffnen |
+| Räume 2–4 | Zufällige Räume und Funde; Screech kann in dunklen Räumen auftreten |
+| Ab Raum 5 | Zusätzlich kann Rush erscheinen |
+| Raum 25 | Jeffs Shop: sicherer Raum zum Einkaufen |
+| Räume 26–34 | Weitere Erkundung vor der Verfolgung |
+| Räume 35–45 | Seek-Verfolgung mit Links-/Rechts-Entscheidungen |
+| Raum 46 | Ziel der Seek-Flucht |
+| Räume 46–49 | Normale Erkundung nach der Verfolgung |
+| Raum 50 | Geplantes Figure-Finale |
 
-Der normale Spielablauf besteht darin, einen Raum zu untersuchen, auf Warnsignale zu achten und anschliessend die nächste Tür zu erreichen. Manche Begegnungen unterbrechen diesen Ablauf mit Rätseln oder Aufgaben unter Zeitdruck.
+Nach der Flucht vor Seek ist der Rückweg in die Verfolgungsstrecke versperrt. Innerhalb der normalen Abschnitte kann der Spieler mit `return` zurückgehen.
 
-## 🗺️ Der Weg durch die 100 Türen
+## Räume und ASCII-Maps
 
-| Abschnitt | Geplantes Ereignis |
+Die normalen Räume werden beim Spielstart aus acht Layouts ausgewählt.
+
+| Layout | Umgebung |
 | :--- | :--- |
-| Einstieg bis Tür 10 | Einfache Räume zum Kennenlernen der Befehle und Sammeln von Coins. |
-| Ab Tür 10 | Rush kann erscheinen. Flackerndes Licht kündigt ihn an. |
-| Tür 35 | Die erste Verfolgung durch Seek beginnt. Ziel ist Tür 46. |
-| Tür 50 | Figure bewacht ein Rätsel mit Büchern und einem fünfstelligen Code. |
-| Direkt nach Tür 50 | Jeff bietet in seinem Shop hilfreiche Items an. |
-| Tür 75 | Seek kehrt zurück. Diesmal führt die Flucht durch zwölf Türen. |
-| Tür 100 | Zehn Batterien finden, Figure ausweichen und mit dem Aufzug entkommen. |
+| `BEDROOM` | Hotelzimmer mit Bett, Schrank und Schreibtisch |
+| `LIBRARY` | Kleine Bibliothek mit Regalen und Lesetisch |
+| `HALLWAY` | Langer Flur mit Seitentüren |
+| `KITCHEN` | Küche mit Esstisch und Vorratsschränken |
+| `STORAGE_ROOM` | Lagerraum mit Kisten, Fässern und Regalen |
+| `BATHROOM` | Badezimmer mit Badewanne, Dusche und Schrank |
+| `LOUNGE` | Aufenthaltsraum mit Sofa, Kamin und Klavier |
+| `OFFICE` | Büro mit Schreibtisch, Aktenschränken und Safe |
 
-## 🔦 Räume und Dunkelheit
+Zusätzlich gibt es besondere Layouts:
 
-Mit `search` untersucht der Spieler einen Raum nach Coins und gegebenenfalls einem Schlüssel. Mit `continue` versucht er, zur nächsten Tür zu gelangen. Eine verschlossene Tür erfordert zuerst den passenden Schlüssel.
+| Layout | Einsatz |
+| :--- | :--- |
+| Jeffs Shop | Fester Verkaufsraum bei Tür 25, definiert in `JeffShop` |
+| `SEEK_RUN` | Wiederverwendetes Layout für die Entscheidungen während Seek |
+| `GRAND_LIBRARY` | Vorbereitete Map für das spätere Figure-Finale |
 
-Dunkle Räume werden durch einen Texthinweis angekündigt. Eine funktionierende Flashlight erleichtert die Orientierung und die Suche.
+Die übrigen Layouts sind in [`RoomLayouts.java`](src/main/java/ch/bbw/zork/RoomLayouts.java) definiert.
 
-Ohne funktionierende Flashlight gelten in dunklen Räumen folgende Regeln:
+**Ein Layout kann mehrfach vorkommen, jeder Raum besitzt aber seinen eigenen Zustand.** Coins, Items, Schlösser und Dunkelheit werden nicht zwischen Räumen geteilt.
 
-- Bei `continue` besteht eine **20 % Chance**, die Tür nicht zu finden und im aktuellen Raum zu bleiben.
-- Auch mit `search` wird es schwieriger, Coins oder einen Schlüssel zu finden. Die genaue Wahrscheinlichkeit ist noch offen.
+Die ASCII-Map erscheint beim Betreten eines Raums – sowohl mit `continue` als auch mit `return`. Mit `look` kann sie erneut angezeigt werden.
 
-Solange sich der Spieler in einem dunklen Raum befindet, besteht **jede Sekunde eine 5 % Chance**, dass Screech erscheint.
+## Zufällige Räume und Rewards
 
-## 👁️ Monster und Begegnungen
+Raum 1 ist immer gleich:
 
-### Rush: Achte auf das Licht
+- Schlafzimmer-Layout
+- 10 Coins
+- Ein Key
+- Verschlossene Vorwärtstür
+- Keine Dunkelheit
 
-Ab Tür 10 besteht die Möglichkeit, dass Rush sich nähert. Das Licht beginnt zu flackern. Der Spieler muss den Hinweis erkennen und sich rechtzeitig mit `hide` verstecken.
+In normalen Räumen ab Raum 2 gelten folgende Wahrscheinlichkeiten:
 
-### Screech: Dreh dich um
+| Eigenschaft oder Fund | Wahrscheinlichkeit |
+| :--- | :--- |
+| Dunkler Raum | 25 % |
+| Verschlossene Vorwärtstür | 20 % |
+| Coins vor Raum 25 | 70 % |
+| Batterie | 20 % |
+| Bandage | 20 % |
 
-Screech kann in dunklen Räumen erscheinen. Sobald das Terminal seine Anwesenheit ankündigt, muss der Spieler schnell `spin` eingeben. Reagiert er zu spät, verliert er **40 HP**.
+Die Würfe sind unabhängig. Ein Raum kann mehrere Funde enthalten oder leer sein.
 
-### Seek: Folge dem Guiding Light
+Bei einem Coin-Fund erhält der Spieler **5–25 Coins**. Eine Flashlight liegt garantiert in einem zufälligen Raum zwischen **2 und 8**.
 
-Bei Tür 35 beginnt eine automatische Flucht vor Seek. Der Spieler entscheidet in jedem Raum, ob er nach links oder rechts läuft. Die Räume werden als ASCII-Modell mit zwei Türen dargestellt. Ein Stern `*` markiert die richtige Tür und stellt das Guiding Light dar.
+Eine verschlossene Vorwärtstür hat immer einen zugehörigen Key im aktuellen Raum. Der letzte vorläufige Raum erhält kein zusätzliches Schloss. Jeffs Shop und die Seek-Strecke enthalten keine zufälligen Rewards.
 
-| Regel | Erste Verfolgung | Zweite Verfolgung |
+Layouts und Funde werden **einmal beim Spielstart** erzeugt. Wiederholtes Suchen oder Zurückgehen würfelt keine neuen Gegenstände aus.
+
+## Spieler und Items
+
+Der Spieler startet mit **100 HP und 0 Coins**. Bei 0 HP endet der Versuch.
+
+| Item | Wirkung | Verwendung |
 | :--- | :--- | :--- |
-| Start | Tür 35 | Tür 75 |
-| Strecke | Etwa zehn Räume, Ziel Tür 46 | Zwölf Türen |
-| Zeitlimit | 45 Sekunden insgesamt | 45 Sekunden insgesamt |
-| Falsche Richtung | 5 Sekunden Zeitabzug | 5 Sekunden Zeitabzug |
-| Zeit abgelaufen | Seek erwischt den Spieler. Der Versuch endet. | Seek erwischt den Spieler. Der Versuch endet. |
+| Key | Öffnet eine verschlossene Vorwärtstür | Automatisch bei `continue` |
+| Lockpick | Öffnet eine verschlossene Vorwärtstür ohne Key | Automatisch bei `continue` |
+| Flashlight | Verhindert Fehlschläge durch Dunkelheit, wenn eingeschaltet und geladen | `flashlight on` / `flashlight off` |
+| Batterie | Lädt bis zu 30 Prozentpunkte nach | `use battery` |
+| Bandage | Heilt bis zu 15 HP | `use bandage` |
+| Crucifix | Aktiviert Schutz gegen den nächsten Schaden | `use crucifix` |
 
-Die Herausforderung besteht darin, die Markierung schnell zu erkennen und die passende Richtung einzugeben.
+### Verbrauchbare Gegenstände
 
-### Figure: Ein Geräusch kann reichen
+- Key und Lockpick werden beim Öffnen einer verschlossenen Tür verbraucht.
+- Ein vorhandener Lockpick hat Vorrang vor einem Key.
+- Geöffnete Türen bleiben offen und verbrauchen später kein weiteres Item.
+- Eine Bandage heilt maximal auf 100 HP. Bei 90 HP heilt sie beispielsweise 10 HP und wird vollständig verbraucht.
+- Bei vollen HP bleibt eine Bandage im Inventar.
+- Eine Batterie lädt maximal auf 100 %. Bei voller Batterie wird sie nicht verbraucht.
+- Batterien können erst verwendet werden, wenn der Spieler eine Flashlight besitzt.
 
-Figure sieht nichts, hört dafür aber besonders gut. Wenn er den Spieler hört, muss dieser sofort `hide` eingeben. Gelingt das nicht rechtzeitig, endet der Versuch sofort.
+## Dunkelheit und Flashlight
 
-#### Tür 50: Das Bücher-Rätsel
+Dunkle Räume werden durch eine Textmeldung angekündigt.
 
-Der Spieler muss einen **fünfstelligen Zahlencode** entschlüsseln, um die Ausgangstür zu öffnen.
-
-1. `source` zeigt eine Vorlage mit fünf Symbolen in einer festen Reihenfolge. Diese Reihenfolge bestimmt die Stellen des Codes.
-2. `findbook` zeigt eines von insgesamt acht Büchern. Jedes Buch ordnet einem Symbol eine Ziffer zu.
-3. Der Spieler sammelt die benötigten Zuordnungen und setzt die Ziffern in der Reihenfolge der Vorlage zusammen.
-4. Mit `code` startet er die Eingabe des fünfstelligen Codes.
-5. Ist der Code richtig, wird die Ausgangstür freigeschaltet.
-
-**Das Risiko:** Jeder Aufruf von `findbook` hat eine **15 % Chance**, Figures Aufmerksamkeit zu wecken. Dann muss sich der Spieler schnell verstecken.
-
-Beispiel für die Entschlüsselung, mit frei gewählten Symbolen und Werten:
-
-| Position in der Vorlage | Symbol | Ziffer aus dem passenden Buch |
-| :---: | :---: | :---: |
-| 1 | ★ | 7 |
-| 2 | ◆ | 2 |
-| 3 | ● | 9 |
-| 4 | ▲ | 4 |
-| 5 | ■ | 1 |
-
-Aus dieser Vorlage ergibt sich der Code **72941**. Die übrigen Bücher müssen für diesen Beispielcode nicht verwendet werden.
-
-## 🛒 Jeffs Shop und Items
-
-Nach Tür 50 erreicht der Spieler Jeffs Shop. Hier kann er seine gesammelten Coins für verschiedene Hilfsmittel ausgeben.
-
-| Item | Geplante Wirkung |
-| :--- | :--- |
-| Bandaids | Stellen Lebenspunkte wieder her. |
-| Flashlight | Hilft in dunklen Räumen. Bei leerer Batterie kann bei Jeff eine neue gekauft werden. |
-| Crucifix | Wird mit `crucifix` aktiviert und schützt einmalig vor dem nächsten Schaden. Danach ist der Schutz verbraucht. |
-
-Preise, Heilwerte und die Batterielaufzeit der Flashlight werden während der Entwicklung festgelegt.
-
-## 🔋 Tür 100: Die letzte Flucht
-
-Im letzten Bereich trifft der Spieler erneut auf Figure. Um zu entkommen, muss er **alle zehn versteckten Batterien** finden und zum Aufzug bringen.
-
-Die verfügbaren Bereiche sind `west`, `east`, `north`, `south` und `elevator`. In den Räumen können Batterien versteckt sein. Mit `search` wird der aktuelle Raum durchsucht.
-
-Jede Suche hat eine **20 % Chance**, dass Figure den Spieler hört. In diesem Fall ist erneut eine schnelle Reaktion mit `hide` erforderlich.
-
-Sobald der Spieler alle zehn Batterien besitzt, kann er zum Bereich `elevator` gehen und entkommen. Damit ist das Spiel gewonnen.
-
-## ⌨️ Geplante Befehle
-
-| Befehl | Funktion | Einsatz |
+| Aktion | Ohne eingeschaltete, geladene Flashlight | Mit eingeschalteter, geladener Flashlight |
 | :--- | :--- | :--- |
-| `search` | Den aktuellen Raum durchsuchen. | Coins und Schlüssel finden, im Finale Batterien suchen. |
-| `continue` | Versuchen, zur nächsten Tür zu gelangen. | Normale Erkundung. |
-| `hide` | Sich vor einer Gefahr verstecken. | Bei Rush oder wenn Figure aufmerksam wird. |
-| `spin` | Sich schnell umdrehen. | Auf Screech reagieren. |
-| `source` | Die Vorlage mit fünf geordneten Symbolen anzeigen. | Figurenrätsel bei Tür 50. |
-| `findbook` | Eines der acht Bücher mit einer Symbol-Ziffer-Zuordnung anzeigen. | Figurenrätsel bei Tür 50. |
-| `code` | Die Eingabe des fünfstelligen Zahlencodes starten. | Ausgang bei Tür 50 freischalten. |
-| `crucifix` | Ein vorhandenes Crucifix aktivieren. | Einmaligen Schutz vorbereiten. |
+| `continue` | 20 % Chance, die Tür nicht zu finden | Kein Fehlschlag durch Dunkelheit |
+| `search` | 25 % Chance, nichts zu finden | Kein Fehlschlag durch Dunkelheit |
+| `return` | Keine zusätzliche Dunkelheitsprüfung | Keine zusätzliche Dunkelheitsprüfung |
 
-Für Links/Rechts-Entscheidungen, Raumwechsel im Finale, Einkäufe und die Nutzung weiterer Items wird die genaue Befehlssyntax noch festgelegt.
+Eine fehlgeschlagene Suche entfernt keine Coins oder Items. Ein Fehlschlag beim Weitergehen verbraucht keinen Key oder Lockpick.
 
-## 🛠️ Geplante Umsetzung
+Die Flashlight verhindert diese Orientierungsprobleme. Sie verhindert nicht automatisch das Erscheinen von Screech.
 
-Die Umsetzung verbindet eine normale Befehlseingabe mit zeitabhängigen Ereignissen. Besonders wichtig ist, dass Timer und Monsterereignisse auch dann weiterlaufen, wenn der Spieler gerade keinen Befehl eingibt.
+### Batterieverbrauch
 
-Unsere zentralen Entwicklungsaufgaben sind:
+- Eine neue Flashlight startet mit 100 %.
+- Je 30 Sekunden eingeschalteter Zeit werden 10 Prozentpunkte verbraucht.
+- Ausschalten pausiert den Verbrauch.
+- Angebrochene Zeitintervalle bleiben gespeichert.
+- Bei 0 % schaltet die Lampe aus.
+- Nach dem Nachladen muss eine ausgeschaltete Lampe wieder eingeschaltet werden.
+- `status` und `inventory` zeigen Ladestand und Ein-/Aus-Zustand.
 
-- Spielerstatus mit HP, Coins und Inventar verwalten.
-- Räume, verschlossene Türen und zufällige Funde umsetzen.
-- Monster mit Warnsignalen und passenden Reaktionen einbauen.
-- Zeitlimits und Zufallsereignisse mit der Terminaleingabe verbinden.
-- Seek-Räume mit ASCII darstellen.
-- Das Bücher-Rätsel, Jeffs Shop und das Aufzugfinale umsetzen.
+Auch Wartezeit ohne Eingabe zählt. Der Verbrauch wird beim Abfragen oder Verwenden der Flashlight nachgerechnet.
 
-Programmiersprache, Projektstruktur und Startanleitung werden ergänzt, sobald die technische Grundlage feststeht.
+## Jeffs Shop – Raum 25
 
-## 📌 Noch offene Detailregeln
+Jeffs Shop ist immer hell und unverschlossen. Hier erscheinen keine Monster.
 
-Die Kernidee steht. Folgende Punkte werden bei der Umsetzung konkretisiert:
+Mit `shop` wird das Angebot angezeigt. Einkäufe sind nur möglich, solange sich der Spieler in Raum 25 befindet.
 
-- Start-HP, Itempreise, Heilwerte und Flashlight-Laufzeit.
-- Häufigkeit von Rush und die genauen Reaktionszeiten für `hide` und `spin`.
-- Ob Tür 10 noch zum sicheren Einstieg gehört oder bereits Rush auslösen kann.
-- Die genaue Zählung der ersten Seek-Strecke zwischen Tür 35 und Tür 46.
-- Verhalten bei wiederholtem `findbook` und bei einer falschen Codeeingabe.
-- Wirkung des Crucifix bei sofort tödlichen Begegnungen und abgelaufenen Seek-Timern.
-- Ob andere Zufallsmonster während besonderer Begegnungen pausieren.
+| Produkt | Preis | Kaufbefehl |
+| :--- | ---: | :--- |
+| Crucifix | 250 Coins | `buy crucifix` |
+| Lockpick | 50 Coins | `buy lockpick` |
+| Flashlight | 100 Coins | `buy flashlight` |
+| Bandage | 75 Coins | `buy bandage` |
 
-**Öffne die nächste Tür. Aber achte darauf, was hinter dir passiert.**
+Eine gekaufte Flashlight ersetzt die bisherige. Sie besitzt 100 % Batterie und ist zunächst ausgeschaltet.
 
-*Ja, dieses Text ist KI generiert, die Ideen und Commands haben aber wir selber entdeckt. KI dient hier, um unsere Ideen formulieren zu können in einem tollen MD Format!*
+Reichen die Coins nicht aus, wird weder Geld abgezogen noch ein Item vergeben.
+
+**Ab dem ersten Erreichen von Raum 25 können keine weiteren Coins gesammelt werden.** Das gilt auch beim Zurückgehen in frühere Räume. Bereits gesammelte Coins bleiben erhalten und können bei Jeff ausgegeben werden.
+
+Der Shop kann später erneut besucht werden, solange er noch erreichbar ist.
+
+## Monster
+
+Monsterchancen werden beim Betreten eines Raums geprüft, auch beim Zurückgehen. Wiederholtes `search` oder `look` löst keinen neuen Erscheinungswurf aus.
+
+Pro Raumbetreten beginnt höchstens eine Begegnung. Ab Raum 5 wird zuerst Rush geprüft. Erscheint Rush nicht, kann in einem dunklen Raum Screech auftreten.
+
+Während einer laufenden Rush- oder Screech-Begegnung ist der Raumwechsel gesperrt.
+
+### Rush
+
+**Ab Raum 5: 25 % Erscheinungswahrscheinlichkeit pro geeignetem Raumbetreten.**
+
+Die Warnung steht unter der Raumausgabe:
+
+```text
+flicker flicker
+```
+
+Ab diesem Moment hat der Spieler **6 Sekunden**, um `hide` einzugeben.
+
+- Ohne rechtzeitiges Verstecken verursacht Rush tödlichen Schaden.
+- Im Versteck ist nur `unhide` erlaubt.
+- Ein zu frühes `unhide` lässt den Spieler im Versteck bleiben.
+- Nach Ablauf des Timers erscheint:
+
+```text
+A dark force just rushed through. I should probably move
+```
+
+Danach muss der Spieler selbst `unhide` eingeben, um weiterzuspielen.
+
+Deathscreen:
+
+```text
+Oh, looks like rush got you.
+Next time, try to hide quick enough..
+```
+
+### Screech
+
+**In dunklen Räumen: 50 % Erscheinungswahrscheinlichkeit, wenn keine andere Begegnung beginnt.**
+
+Die Warnung lautet:
+
+```text
+psst psst
+```
+
+Der Spieler muss innerhalb von **3 Sekunden** `peek` eingeben.
+
+Bei rechtzeitiger Reaktion:
+
+```text
+What the hell was that? Whatever.
+```
+
+Bei einer zu späten Reaktion verliert er **40 HP**. Überlebt er den Biss, erscheint:
+
+```text
+OUCH. Stupid little crap. I better get out of here
+```
+
+Deathscreen:
+
+```text
+Oh, you died to screech.
+Just peek at him and this scaredy cat will leave you alone..
+```
+
+### Seek
+
+Beim Betreten von Raum 35 startet eine kurze, dreisekündige Text-Cutscene. **Erst danach beginnt das Zeitlimit von 30 Sekunden.**
+
+Der Spieler muss die Entscheidungen in den Räumen **35–45** überwinden und Raum **46** erreichen.
+
+| Regel | Verhalten |
+| :--- | :--- |
+| Steuerung | `left` oder `right` |
+| Guiding Light | Ein `*` markiert die richtige Seite |
+| Richtige Wahl | Nächster Raum; die richtige Seite wird neu gewürfelt |
+| Falsche Wahl | 5 Sekunden Abzug; gleicher Raum und gleiche Markierung |
+| Zeitlimit | 30 Sekunden insgesamt, ohne Cutscene |
+| Ziel | Raum 46 erreichen |
+
+Während der Verfolgung erscheinen weder Rush noch Screech. Normale Bewegung mit `continue` oder `return` ist währenddessen nicht möglich.
+
+`look` zeigt die aktuelle Seek-Map erneut. Status, Inventar und Item-Verwendung sind weiterhin möglich, aber der Timer läuft dabei weiter.
+
+Nach Erreichen von Raum 46 endet die Verfolgung. Der Rückweg in die Seek-Strecke ist versperrt.
+
+Deathscreen:
+
+```text
+Seek caught you
+The guiding light shows you where to go with a "*", trust it.
+```
+
+## Crucifix-Schutz
+
+Mit `use crucifix` wird ein Crucifix aus dem Inventar verbraucht und der Schutz aktiviert.
+
+- Der Schutz bleibt bis zum nächsten schädigenden Treffer aktiv.
+- Er verhindert genau einen Treffer, auch wenn dieser sonst tödlich wäre.
+- Danach ist der Schutz aufgebraucht.
+- Eine erneute Aktivierung bei bereits aktivem Schutz verbraucht kein weiteres Crucifix.
+- `status` zeigt an, ob der Schutz aktiv ist.
+
+### Gegen Rush
+
+```text
+OH MAN. CLOSE ONE
+Rush has been crucified.
+```
+
+### Gegen Screech
+
+```text
+GO AWAY!
+Screech has been crucified
+```
+
+**Rush und Screech werden dadurch nicht dauerhaft entfernt.** In späteren Räumen können sie erneut erscheinen.
+
+### Gegen Seek
+
+Läuft der Seek-Timer bei aktivem Schutz ab, blockiert das Crucifix den Fangversuch:
+
+```text
+GOT HIM. But why is he not going down?
+Seek has been slowed down for 10 Seconds. KEEP RUNNING!
+```
+
+Ab diesem Moment erhält der Spieler **10 weitere Sekunden** für die verbleibende Strecke. Seek verfolgt ihn weiter. Der Crucifix-Schutz ist danach verbraucht.
+
+## Commands
+
+| Befehl | Funktion |
+| :--- | :--- |
+| `continue` | Zur nächsten Tür weitergehen |
+| `return` | In den vorherigen erreichbaren Raum zurückgehen |
+| `look` | Aktuelle ASCII-Map erneut anzeigen |
+| `search` | Coins und Items aus dem Raum sammeln |
+| `status` | Raum, HP, Coins, Flashlight und Schutzstatus anzeigen |
+| `inventory` | Inventar anzeigen |
+| `flashlight on` | Flashlight einschalten |
+| `flashlight off` | Flashlight ausschalten |
+| `shop` | Jeffs Angebot in Raum 25 anzeigen |
+| `buy crucifix` | Crucifix für 250 Coins kaufen |
+| `buy lockpick` | Lockpick für 50 Coins kaufen |
+| `buy flashlight` | Flashlight für 100 Coins kaufen |
+| `buy bandage` | Bandage für 75 Coins kaufen |
+| `use crucifix` | Einmaligen Schutz aktivieren |
+| `use bandage` | Bis zu 15 HP heilen |
+| `use battery` | Flashlight um bis zu 30 Prozentpunkte laden |
+| `hide` | Während einer Rush-Warnung verstecken |
+| `unhide` | Versteck nach Rushs Durchlauf verlassen |
+| `peek` | Screech verscheuchen |
+| `left` | Während Seek die linke Tür wählen |
+| `right` | Während Seek die rechte Tür wählen |
+| `help` | Befehlsübersicht anzeigen |
+| `quit` | Spiel beenden; im Versteck gesperrt |
+
+Die bisherigen Kurzbefehle `bandage` und `battery` funktionieren ebenfalls.
+
+**Ein Command zählt erst nach dem Abschicken mit Enter.**
+
+## Timer und Spielende
+
+Die Befehlseingabe wird in einem eigenen Thread gelesen und über eine Queue an die Spielschleife übergeben.
+
+Die Spielschleife prüft die Begegnungen regelmässig. Dadurch laufen Warnfristen, Cutscene und Seek-Timer auch dann weiter, wenn der Spieler nichts eingibt.
+
+Nach einem tödlichen Treffer erscheint der passende Deathscreen und das Programm endet normal mit Exit-Code 0. Ein neuer Versuch wird durch erneutes Starten von `Zork2` begonnen.
+
+## Tür 50 – Figure und die Grand Library
+
+**Dieser Abschnitt ist geplant und noch nicht spielbar.**
+
+Figure bewacht die grosse Bibliothek. Er kann nichts sehen, hört dafür besonders gut. Der Spieler soll Bücher finden und den sechsstelligen PIN des Great Gate entschlüsseln.
+
+Geplanter Ablauf:
+
+1. `source` zeigt sechs Symbole in der benötigten Reihenfolge.
+2. `findbook` liefert Hinweise aus insgesamt acht Büchern.
+3. Die Bücher ordnen Symbolen einzelne Ziffern zu.
+4. Der Spieler setzt daraus den sechsstelligen PIN zusammen.
+5. Mit `code` wird die Lösung eingegeben.
+6. Der richtige PIN öffnet den Ausgang und beendet das Spiel erfolgreich.
+
+Bei `findbook` ist eine 15-%-Chance vorgesehen, Figures Aufmerksamkeit zu wecken. Dann muss der Spieler rechtzeitig `hide` eingeben.
+
+Reaktionsfristen und die Folgen falscher Codeeingaben werden bei der Umsetzung festgelegt.
+
+## Projekt starten
+
+Benötigt werden ein JDK, beispielsweise JDK 21, und für den Terminal-Build Maven.
+
+### IntelliJ IDEA
+
+1. Repository klonen und den Projektordner mit der `pom.xml` öffnen.
+2. JDK auswählen und das Maven-Projekt laden.
+3. Die Main-Methode in `src/main/java/ch/bbw/zork/Zork2.java` starten.
+
+### Terminal
+
+Im Hauptordner des Projekts:
+
+```bash
+mvn clean package
+java -cp target/classes ch.bbw.zork.Zork2
+```
+
+## Aufbau des Codes
+
+| Klasse | Aufgabe |
+| :--- | :--- |
+| `Zork2` | Einstiegspunkt des Programms |
+| `Game` | Raumerzeugung, Spielschleife, Navigation und Befehlsverarbeitung |
+| `Player` | HP, Coins, Inventar, Verbrauchsitems und Crucifix-Schutz |
+| `Room` | Raumnummer, Layout, Ausgänge, Funde, Dunkelheit und Schloss |
+| `RoomLayouts` | ASCII-Layouts für normale Räume, Seek und die Grand Library |
+| `JeffShop` | Shop-Layout, Angebot, Preise und Käufe |
+| `MonsterController` | Rush, Screech, Verstecken und Reaktionsfristen |
+| `SeekController` | Cutscene, Guiding Light, Richtungswahl und Chase-Timer |
+| `Item` | Gegenstand mit Name und Typ |
+| `ItemType` | Verfügbare Gegenstandstypen |
+| `Parser` | Texteingaben lesen und in Commands umwandeln |
+| `Command` | Befehl mit optionalem zweitem Wort |
+| `CommandWords` | Gültige Befehle |
+
+## Dokumentation
+
+- [Räumlichkeiten und ursprüngliche Skizze](docs/doors-raeumlichkeiten-doc.md)
+- [Dokumentation dunkler Räume](docs/dunkle-raeume.md)
+- [Räumlichkeiten-UML](diagrams/doors-raeumlichkeiten-uml.png)
+- [Klassendiagramm](diagrams/doors-klassendiagramm.png)
+
+Die ergänzenden Dokumente und Diagramme enthalten teilweise frühere Planungsstände. Die neuen Klassen und Mechaniken müssen dort noch nachgeführt werden.
+
+## Herkunft und KI-Unterstützung
+
+Dieses Schulprojekt basiert auf dem bereitgestellten Zork-Template von Michael Kölling, überarbeitet von Rinaldo Lanza.
+
+Die Spielgestaltung ist von Roblox DOORS inspiriert. Es handelt sich um ein unabhängiges Schulprojekt.
+
+Unser Konzept, die gewünschten Mechaniken und die Entscheidungen zur Gestaltung stammen von uns. KI unterstützt bei der Dokumentation, bei Erklärungen sowie beim Entwerfen und Überarbeiten von Code. Wir integrieren die Vorschläge und testen das Spiel schrittweise.
+
+---
+
+> **Wenn das Licht flackert, lies nicht erst die README.**
