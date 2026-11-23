@@ -165,7 +165,7 @@ public class MonsterController {
 
             } else if (rushActive || figureActive) {
                 System.out.println(
-                        "Not yet. Stay hidden until Rush has passed."
+                        "Not yet. Stay hidden until the danger has passed."
                 );
 
             } else {
@@ -189,12 +189,12 @@ public class MonsterController {
                 hidden = true;
 
                 System.out.println(
-                        "You hide. Stay here until Rush has passed."
+                        "You hide. Stay here until the danger has passed."
                 );
 
             } else {
                 System.out.println(
-                        "There is no approaching Rush to hide from."
+                        "There is nothing to hide from right now."
                 );
             }
 
