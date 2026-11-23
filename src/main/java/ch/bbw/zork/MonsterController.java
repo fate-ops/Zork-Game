@@ -7,6 +7,7 @@ public class MonsterController {
 
     private static final long RUSH_TIME = 6_000_000_000L;
     private static final long SCREECH_TIME = 3_000_000_000L;
+    private static final long FIGURE_TIME = 4_000_000_000L;
 
     private final Player player;
     private final Random random;
@@ -15,6 +16,7 @@ public class MonsterController {
     private boolean rushActive;
     private boolean screechActive;
     private boolean hidden;
+    private boolean figureActive;
 
     private long deadline;
 
@@ -52,6 +54,12 @@ public class MonsterController {
 
             System.out.println("psst psst");
         }
+    }
+
+    public void warnFigure() {
+        figureActive = true;
+        deadline = clock.getAsLong() + FIGURE_TIME;
+        System.out.println("Figure heard you! Type 'hide' within 4 seconds!");
     }
 
     public boolean update() {
@@ -112,6 +120,26 @@ public class MonsterController {
             return true;
         }
 
+        if (figureActive && now - deadline >= 0) {
+            figureActive = false;
+            System.out.println();
+
+            if (hidden) {
+                System.out.println("Figure walked past. You can 'unhide' now.");
+            } else {
+                player.takeDamage(player.getHp());
+
+                if (player.isAlive()) {
+                    System.out.println("Your crucifix blocked Figure's attack.");
+                } else {
+                    System.out.println("Figure caught you.");
+                    System.out.println("Next time, hide as soon as you hear him coming.");
+                }
+            }
+
+            return true;
+        }
+
         return false;
     }
 
@@ -135,7 +163,7 @@ public class MonsterController {
                         "Use 'unhide' without another word."
                 );
 
-            } else if (rushActive) {
+            } else if (rushActive || figureActive) {
                 System.out.println(
                         "Not yet. Stay hidden until Rush has passed."
                 );
@@ -157,7 +185,7 @@ public class MonsterController {
                         "Use 'hide' without another word."
                 );
 
-            } else if (rushActive) {
+            } else if (rushActive || figureActive) {
                 hidden = true;
 
                 System.out.println(
@@ -175,6 +203,11 @@ public class MonsterController {
 
         if ("unhide".equals(word)) {
             System.out.println("You are not hiding.");
+            return true;
+        }
+
+        if (figureActive) {
+            System.out.println("Figure is coming. Type 'hide'!");
             return true;
         }
 
@@ -208,6 +241,6 @@ public class MonsterController {
     }
 
     public boolean blocksMovement() {
-        return rushActive || screechActive;
+        return rushActive || screechActive || figureActive || hidden;
     }
 }
