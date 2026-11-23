@@ -41,15 +41,16 @@ public final class LibraryPuzzle {
         System.out.println("PIN order: " + String.join(" -> ", symbolOrder));
     }
 
-    public void findBook() {
+    public boolean findBook() {
         if (remainingBooks.isEmpty()) {
             System.out.println("You have already found all eight books. Check your notes.");
-            return;
+            return false;
         }
 
         Clue clue = remainingBooks.remove(remainingBooks.size() - 1);
         notes.put(clue.symbol, clue.digit);
         System.out.println("You found a book: " + clue.symbol + " = " + clue.digit);
+        return true;
     }
 
     public void showNotes() {
@@ -64,8 +65,12 @@ public final class LibraryPuzzle {
         }
     }
 
+    public boolean isValidPinFormat(String attempt) {
+        return attempt != null && attempt.matches("[0-9]{" + PIN_LENGTH + "}");
+    }
+
     public boolean tryCode(String attempt) {
-        if (attempt == null || !attempt.matches("[0-9]{" + PIN_LENGTH + "}")) {
+        if (!isValidPinFormat(attempt)) {
             System.out.println("Use: code <six digits>. Include any leading zero.");
             return false;
         }
