@@ -8,9 +8,9 @@ Durchsuche Räume, sammle Schlüssel und Ausrüstung und achte auf die Warnsigna
 
 ## Projektstatus
 
-Der Spielablauf von **Tür 1 bis Tür 50** ist implementiert. Dazu gehören zufällige Räume und Funde, Jeffs Shop, die Begegnungen mit Rush und Screech, die Seek-Verfolgung und das Figure-Finale mit einem eigenen Siegabschluss.
+Der Spielablauf von **Tür 1 bis Tür 50** ist implementiert. Dazu gehören zufällige Räume und Funde, Jeffs Shop, die Begegnungen mit Rush und Screech, die Seek-Verfolgung und das Figure-Finale mit einem eigenen Siegabschluss. Zusätzlich gibt es die Befehle `back`, `map` und `drop` sowie ein Tragegewicht.
 
-**Als Nächstes kommt der Feinschliff.** Wir spielen einen vollständigen Durchlauf, vergleichen das Projekt mit dem Bewertungsraster und verbessern die Stellen, die dabei auffallen. Dazu gehören das Balancing der Reaktionszeiten, klare Meldungen im Terminal und die Aktualisierung von Tests und Dokumentation, wo nötig.
+Alle Klassen sind mit JavaDoc dokumentiert. JUnit-Tests decken `Player`, `Item`, `JeffShop`, `LibraryPuzzle`, `MonsterController` und `Room` ab. Du führst sie mit `mvn clean test` aus.
 
 ## Spielablauf
 
@@ -57,24 +57,26 @@ Bei jedem neuen Buchfund besteht eine **15-%-Chance**, dass Figure dich hört. E
 
 Batterien findest du in Räumen. Mit `use battery` lädst du die Flashlight um bis zu 30 Prozentpunkte auf. Beim Einschalten beginnt der Verbrauch von 10 Prozentpunkten pro 30 Sekunden.
 
+**Tragegewicht:** Dein Inventar fasst maximal 15 Gewichtspunkte. Die Flashlight wiegt 3, Batterie und Crucifix wiegen je 2, alle anderen Items 1. Ist ein Fund zu schwer, bleibt er mit der Meldung «Your inventory is too heavy to carry» im Raum liegen. Mit `drop <item>` schaffst du Platz und kannst ihn danach mit `search` aufnehmen.
+
 Ein aktives Crucifix kann auch einen tödlichen Treffer abfangen. **Figure kann danach erneut erscheinen.** Bei Seek blockiert es einen Fangversuch und gibt dir 10 zusätzliche Sekunden.
 
 ## Befehle
 
-| Befehl                                         | Funktion |
-|:-----------------------------------------------| :--- |
-| `continue` / `return/back`                        | Vorwärtsgehen oder in den vorherigen erreichbaren Raum zurückkehren |
-| `look` / `search`                              | Raumkarte anzeigen oder nach Coins und Items suchen |
+| Befehl | Funktion |
+| :--- | :--- |
+| `continue` / `return/back` | Vorwärtsgehen oder in den vorherigen erreichbaren Raum zurückkehren |
+| `look` / `search` | Raumkarte anzeigen oder nach Coins und Items suchen |
 | `map` | Zeigt alle Räume und ihre noch vorhandenen Gegenstände. `>>` markiert deinen aktuellen Raum. |
-| `status` / `inventory`                         | Spielerstatus oder Inventar anzeigen |
-| `flashlight on` / `flashlight off`             | Flashlight einschalten oder ausschalten |
-| `shop` / `buy <item>`                          | Angebot ansehen oder in Raum 25 einkaufen, etwa mit `buy lockpick` |
+| `status` / `inventory` | Spielerstatus oder Inventar anzeigen |
+| `flashlight on` / `flashlight off` | Flashlight einschalten oder ausschalten |
+| `shop` / `buy <item>` | Angebot ansehen oder in Raum 25 einkaufen, etwa mit `buy lockpick` |
 | `use bandage` / `use battery` / `use crucifix` | Ausrüstung verwenden |
 | `drop <item>` | Legt ein Item im aktuellen Raum ab und macht Platz im Inventar. Mit `search` kannst du es wieder aufnehmen. Beispiel: `drop bandage`. |
-| `hide` / `unhide` / `peek`                     | Auf Monster reagieren |
-| `left` / `right`                               | Während Seek die Richtung wählen |
+| `hide` / `unhide` / `peek` | Auf Monster reagieren |
+| `left` / `right` | Während Seek die Richtung wählen |
 | `source` / `findbook` / `notes` / `code <PIN>` | Das Rätsel in der Grand Library lösen |
-| `help` / `quit`                                | Befehlsübersicht anzeigen oder das Spiel beenden |
+| `help` / `quit` | Befehlsübersicht anzeigen oder das Spiel beenden |
 
 ## Starten
 
@@ -83,18 +85,21 @@ Voraussetzungen sind ein JDK, beispielsweise **JDK 21**, und Maven für den Buil
 Alternativ im Projektordner:
 
 ```bash
+mvn clean test
 mvn clean package
 java -cp target/classes ch.bbw.zork.Zork2
 ```
 
 ## Dokumentation
 
+- [Klassendiagramm (aktuell, Mermaid)](docs/doors-klassendiagramm.md)
+- [Raumplan mit Regeln pro Bereich](docs/doors-raumplan.md)
 - [Räumlichkeiten und ursprüngliche Skizze](docs/doors-raeumlichkeiten-doc.md)
 - [Dokumentation zu dunklen Räumen](docs/dunkle-raeume.md)
-- [Räumlichkeiten-UML](diagrams/doors-raeumlichkeiten-uml.png)
-- [Klassendiagramm](diagrams/doors-klassendiagramm.png)
+- [Räumlichkeiten-UML (früherer Stand)](diagrams/doors-raeumlichkeiten-uml.png)
+- [Klassendiagramm (früherer Stand)](diagrams/doors-klassendiagramm.png)
 
-Die ergänzenden Dokumente und Diagramme zeigen teilweise frühere Entwicklungsstände.
+Die beiden PNG-Diagramme zeigen frühere Entwicklungsstände. Die aktuellen Diagramme sind die Mermaid-Dateien oben.
 
 Das Projekt nutzt das bereitgestellte Zork-Template von Michael Kölling, überarbeitet von Rinaldo Lanza. Spielkonzept und Entscheidungen stammen von uns. KI hat uns bei der Dokumentation, bei Erklärungen und bei Codevorschlägen unterstützt.
 
