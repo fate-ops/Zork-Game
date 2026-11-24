@@ -3,9 +3,17 @@ package ch.bbw.zork;
 import java.util.Random;
 import java.util.function.LongSupplier;
 
+/**
+ * Steuert die Verfolgung durch Seek in den Räumen 35 bis 45. Nach einer
+ * kurzen Cutscene muss der Spieler innerhalb eines Zeitlimits bei jeder
+ * Tür mit {@code left} oder {@code right} die richtige Seite wählen,
+ * die ein {@code *} markiert. Ziel ist Raum 46.
+ */
 public class SeekController {
 
+    /** Nummer des Raums, in dem die Verfolgung beginnt. */
     public static final int FIRST_ROOM = 35;
+    /** Nummer des Raums, der das Ziel der Flucht ist. */
     public static final int ESCAPE_ROOM = 46;
 
     private static final long SECOND = 1_000_000_000L;
@@ -28,10 +36,25 @@ public class SeekController {
     private long introStarted;
     private long deadline;
 
+    /**
+     * Erstellt einen Controller, der die Systemzeit als Uhr verwendet.
+     *
+     * @param player der Spieler, der gefangen werden kann
+     * @param random Zufallsquelle für die richtige Seite
+     */
     public SeekController(Player player, Random random) {
         this(player, random, System::nanoTime);
     }
 
+    /**
+     * Erstellt einen Controller mit frei wählbarer Uhr. Dieser Konstruktor
+     * ist für Tests gedacht, damit Zeitfristen ohne Warten geprüft werden
+     * können.
+     *
+     * @param player der Spieler, der gefangen werden kann
+     * @param random Zufallsquelle für die richtige Seite
+     * @param clock  Zeitquelle in Nanosekunden
+     */
     SeekController(
             Player player,
             Random random,
@@ -42,6 +65,12 @@ public class SeekController {
         this.clock = clock;
     }
 
+    /**
+     * Startet die Verfolgung mit der Cutscene. Wurde Seek schon gestartet
+     * oder besiegt, passiert nichts.
+     *
+     * @param room der Raum, in dem die Verfolgung beginnt (Raum 35)
+     */
     public void start(Room room) {
         if (isRunning() || completed) {
             return;
@@ -60,6 +89,13 @@ public class SeekController {
         );
     }
 
+    /**
+     * Schaltet die Cutscene weiter und prüft das Zeitlimit. Läuft die Zeit
+     * ab, wird der Spieler gefangen, ausser ein Crucifix schützt ihn. Dann
+     * erhält er zehn zusätzliche Sekunden.
+     *
+     * @return {@code true}, wenn dabei eine Meldung ausgegeben wurde
+     */
     public boolean update() {
         long now = clock.getAsLong();
         boolean changed = false;
@@ -133,6 +169,17 @@ public class SeekController {
         return changed;
     }
 
+    /**
+     * Verarbeitet Befehle während der Verfolgung. Mit {@code left} und
+     * {@code right} wählt der Spieler eine Tür. Eine falsche Wahl kostet
+     * fünf Sekunden, die richtige führt in den nächsten Raum. Befehle
+     * wie {@code use}, {@code status}, {@code inventory} und {@code help}
+     * sind weiterhin erlaubt, alle anderen werden blockiert.
+     *
+     * @param command der eingegebene Befehl
+     * @return {@code true}, wenn der Befehl hier behandelt wurde und das
+     *         Spiel ihn nicht weiter bearbeiten soll
+     */
     public boolean handleCommand(Command command) {
         update();
 
@@ -222,6 +269,10 @@ public class SeekController {
         return true;
     }
 
+    /**
+     * Zeigt die Seek-Map mit dem {@code *} an der richtigen Seite, die
+     * Raumnummer und die verbleibende Zeit.
+     */
     private void showRoom() {
         String layout = RoomLayouts.SEEK_RUN
                 .replaceFirst(
@@ -244,6 +295,12 @@ public class SeekController {
         System.out.println("left / right");
     }
 
+    /**
+     * Berechnet die verbleibende Zeit der Verfolgung.
+     *
+     * @return die Restzeit in Sekunden (aufgerundet), 0 wenn keine
+     *         Verfolgung läuft
+     */
     public long getRemainingSeconds() {
         if (!chasing) {
             return 0;
@@ -257,14 +314,30 @@ public class SeekController {
         return (remaining + SECOND - 1) / SECOND;
     }
 
+    /**
+     * Gibt an, ob die Verfolgung gerade läuft (Cutscene oder Jagd).
+     *
+     * @return {@code true}, wenn Seek aktiv ist
+     */
     public boolean isRunning() {
         return intro || chasing;
     }
 
+    /**
+     * Gibt an, ob der Spieler Seek erfolgreich entkommen ist.
+     *
+     * @return {@code true}, wenn Raum 46 erreicht wurde
+     */
     public boolean hasCompleted() {
         return completed;
     }
 
+    /**
+     * Liefert den Raum, in dem sich der Spieler während der Verfolgung
+     * befindet.
+     *
+     * @return der aktuelle Raum, oder {@code null} vor dem Start
+     */
     public Room getCurrentRoom() {
         return currentRoom;
     }

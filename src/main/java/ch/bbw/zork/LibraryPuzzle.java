@@ -8,6 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Das Rätsel der Grand Library bei Tür 50. Beim Erstellen werden acht
+ * Symbole mit je einer Ziffer verknüpft. Sechs davon ergeben in einer
+ * zufälligen Reihenfolge den PIN des Great Gate, die übrigen zwei dienen
+ * als Ablenkung. Der Spieler findet die Zuordnungen in Büchern.
+ */
 public final class LibraryPuzzle {
 
     private static final int PIN_LENGTH = 6;
@@ -17,6 +23,12 @@ public final class LibraryPuzzle {
     private final Map<String, Integer> notes = new LinkedHashMap<>();
     private final String correctPin;
 
+    /**
+     * Erzeugt ein neues Rätsel mit zufälliger Symbolreihenfolge, zufälligen
+     * Ziffern und dem daraus entstehenden PIN.
+     *
+     * @param random Zufallsquelle für Reihenfolge und Ziffern
+     */
     public LibraryPuzzle(Random random) {
         List<String> symbols = new ArrayList<>(Arrays.asList(
                 "MOON", "EYE", "STAR", "KEY", "CROWN", "FLAME", "DIAMOND", "CROSS"
@@ -37,10 +49,20 @@ public final class LibraryPuzzle {
         Collections.shuffle(remainingBooks, random);
     }
 
+    /**
+     * Gibt die sechs PIN-Symbole in der richtigen Reihenfolge aus.
+     */
     public void showSource() {
         System.out.println("PIN order: " + String.join(" -> ", symbolOrder));
     }
 
+    /**
+     * Findet ein neues Buch und notiert dessen Hinweis (Symbol und Ziffer).
+     * Jedes der acht Bücher kann nur einmal gefunden werden.
+     *
+     * @return {@code true}, wenn ein neues Buch gefunden wurde,
+     *         {@code false}, wenn bereits alle Bücher gefunden sind
+     */
     public boolean findBook() {
         if (remainingBooks.isEmpty()) {
             System.out.println("You have already found all eight books. Check your notes.");
@@ -53,6 +75,9 @@ public final class LibraryPuzzle {
         return true;
     }
 
+    /**
+     * Gibt alle bisher gefundenen Hinweise aus.
+     */
     public void showNotes() {
         if (notes.isEmpty()) {
             System.out.println("You haven't found any clues yet.");
@@ -65,10 +90,25 @@ public final class LibraryPuzzle {
         }
     }
 
+    /**
+     * Prüft, ob eine Eingabe genau aus sechs Ziffern besteht.
+     *
+     * @param attempt die eingegebene Zeichenfolge
+     * @return {@code true}, wenn es genau sechs Ziffern sind
+     *         (führende Nullen erlaubt), sonst {@code false}
+     */
     public boolean isValidPinFormat(String attempt) {
         return attempt != null && attempt.matches("[0-9]{" + PIN_LENGTH + "}");
     }
 
+    /**
+     * Versucht, das Great Gate mit einem PIN zu öffnen und gibt das
+     * Ergebnis aus.
+     *
+     * @param attempt der eingegebene PIN
+     * @return {@code true}, wenn der PIN stimmt und das Spiel gewonnen ist,
+     *         {@code false} bei falschem Format oder falschem PIN
+     */
     public boolean tryCode(String attempt) {
         if (!isValidPinFormat(attempt)) {
             System.out.println("Use: code <six digits>. Include any leading zero.");
@@ -85,6 +125,9 @@ public final class LibraryPuzzle {
         return true;
     }
 
+    /**
+     * Ein Hinweis aus einem Buch: ein Symbol und die dazugehörige Ziffer.
+     */
     private static final class Clue {
         private final String symbol;
         private final int digit;

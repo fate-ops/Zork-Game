@@ -3,6 +3,12 @@ package ch.bbw.zork;
 import java.util.Random;
 import java.util.function.LongSupplier;
 
+/**
+ * Steuert die Monster Rush, Screech und Figure. Die Klasse würfelt das
+ * Erscheinen beim Betreten eines Raums, überwacht die Reaktionsfristen
+ * und verarbeitet die passenden Befehle wie {@code hide}, {@code unhide}
+ * und {@code peek}. Seek wird von {@link SeekController} gesteuert.
+ */
 public class MonsterController {
 
     private static final long RUSH_TIME = 6_000_000_000L;
@@ -20,10 +26,25 @@ public class MonsterController {
 
     private long deadline;
 
+    /**
+     * Erstellt einen Controller, der die Systemzeit als Uhr verwendet.
+     *
+     * @param player der Spieler, der Schaden erleiden kann
+     * @param random Zufallsquelle für das Erscheinen der Monster
+     */
     public MonsterController(Player player, Random random) {
         this(player, random, System::nanoTime);
     }
 
+    /**
+     * Erstellt einen Controller mit frei wählbarer Uhr. Dieser Konstruktor
+     * ist für Tests gedacht, damit Zeitfristen ohne Warten geprüft werden
+     * können.
+     *
+     * @param player der Spieler, der Schaden erleiden kann
+     * @param random Zufallsquelle für das Erscheinen der Monster
+     * @param clock  Zeitquelle in Nanosekunden
+     */
     MonsterController(
             Player player,
             Random random,
@@ -34,6 +55,13 @@ public class MonsterController {
         this.clock = clock;
     }
 
+    /**
+     * Prüft beim Betreten eines Raums, ob ein Monster erscheint. Ab Raum 5
+     * wird zuerst Rush gewürfelt, danach in dunklen Räumen Screech. In
+     * Jeffs Shop und während einer laufenden Begegnung passiert nichts.
+     *
+     * @param room der betretene Raum
+     */
     public void onEnter(Room room) {
         if (room.getNumber() == JeffShop.ROOM_NUMBER
                 || rushActive
@@ -56,12 +84,24 @@ public class MonsterController {
         }
     }
 
+    /**
+     * Startet eine Begegnung mit Figure. Der Spieler hat vier Sekunden Zeit,
+     * sich mit {@code hide} zu verstecken.
+     */
     public void warnFigure() {
         figureActive = true;
         deadline = clock.getAsLong() + FIGURE_TIME;
         System.out.println("Figure heard you! Type 'hide' within 4 seconds!");
     }
 
+    /**
+     * Prüft, ob eine Reaktionsfrist abgelaufen ist, und wertet die
+     * Begegnung aus. Der Spieler nimmt Schaden, wenn er nicht rechtzeitig
+     * reagiert hat. Ein Crucifix kann einen tödlichen Treffer verhindern.
+     *
+     * @return {@code true}, wenn eine Begegnung abgeschlossen wurde und
+     *         dabei eine Meldung ausgegeben wurde
+     */
     public boolean update() {
         long now = clock.getAsLong();
 
@@ -143,6 +183,16 @@ public class MonsterController {
         return false;
     }
 
+    /**
+     * Verarbeitet Befehle, die zu einer Monsterbegegnung gehören
+     * ({@code hide}, {@code unhide} und {@code peek}). Im Versteck ist nur
+     * {@code unhide} erlaubt, und während Figure naht, ist nur
+     * {@code hide} möglich.
+     *
+     * @param command der eingegebene Befehl
+     * @return {@code true}, wenn der Befehl hier behandelt wurde und das
+     *         Spiel ihn nicht weiter bearbeiten soll
+     */
     public boolean handleCommand(Command command) {
         update();
 
@@ -236,10 +286,21 @@ public class MonsterController {
         return false;
     }
 
+    /**
+     * Gibt an, ob sich der Spieler gerade versteckt.
+     *
+     * @return {@code true}, wenn der Spieler versteckt ist
+     */
     public boolean isHidden() {
         return hidden;
     }
 
+    /**
+     * Gibt an, ob eine Begegnung oder das Verstecken den Raumwechsel
+     * sperrt.
+     *
+     * @return {@code true}, wenn der Spieler den Raum nicht wechseln darf
+     */
     public boolean blocksMovement() {
         return rushActive || screechActive || figureActive || hidden;
     }

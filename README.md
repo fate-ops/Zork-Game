@@ -2,98 +2,103 @@
 
 **50 Türen. Ein Hotel. Und du bist nicht allein.**
 
-Ein textbasiertes Survival-Horrorspiel in Java, inspiriert von Roblox DOORS und entwickelt als Schulprojekt auf Basis des Zork-Templates.
+DOORS: Terminal Edition ist ein textbasiertes Survival-Horrorspiel in Java. Es wurde als Schulprojekt auf Basis des Zork-Templates entwickelt und ist von Roblox DOORS inspiriert.
 
-Durchsuche Räume, sammle Schlüssel und Ausrüstung und achte auf die Warnsignale. Bei Tür 50 wartet Figure in der Grand Library. Wer den sechsstelligen PIN des Great Gate entschlüsselt und Figure ausweicht, entkommt dem Hotel.
-
-## Projektstatus
-
-Der Spielablauf von **Tür 1 bis Tür 50** ist implementiert. Dazu gehören zufällige Räume und Funde, Jeffs Shop, die Begegnungen mit Rush und Screech, die Seek-Verfolgung und das Figure-Finale mit einem eigenen Siegabschluss.
-
-**Als Nächstes kommt der Feinschliff.** Wir spielen einen vollständigen Durchlauf, vergleichen das Projekt mit dem Bewertungsraster und verbessern die Stellen, die dabei auffallen. Dazu gehören das Balancing der Reaktionszeiten, klare Meldungen im Terminal und die Aktualisierung von Tests und Dokumentation, wo nötig.
+Durchsuche Räume, sammle Schlüssel und Ausrüstung und achte auf die Warnsignale. Hinter Tür 50 wartet Figure in der Grand Library. Entschlüssle den PIN des Great Gate, um aus dem Hotel zu entkommen.
 
 ## Spielablauf
 
 | Abschnitt | Was passiert? |
-| :--- | :--- |
-| Tür 1 | Fester Einstieg. Finde mit `search` den Schlüssel zur ersten verschlossenen Tür. |
-| Türen 2–24 | Erkunde zufällig zusammengestellte Räume und sammle Coins und Items. Ab Raum 5 kann Rush auftauchen. |
-| Tür 25 | Jeffs Shop. Gib deine Coins für Ausrüstung aus. Ab dem ersten Erreichen dieses Raums kannst du keine weiteren Coins sammeln. |
-| Türen 26–34 | Weitere Erkundung vor der Verfolgung. |
-| Türen 35–45 | Seek verfolgt dich. Folge dem `*` in der ASCII-Map und erreiche Tür 46 innerhalb von 30 Sekunden. |
+| --- | --- |
+| Tür 1 | Du startest im Schlafzimmer. Finde mit `search` den Schlüssel für die erste verschlossene Tür. |
+| Türen 2–24 | Erkunde zufällig zusammengestellte Räume und sammle Münzen und Gegenstände. In einem der Räume 2–8 liegt die Taschenlampe. Ab Tür 5 kann Rush erscheinen. |
+| Tür 25 | Kaufe Ausrüstung bei Jeff. Ab dem ersten Erreichen des Shops kannst du keine weiteren Münzen sammeln. |
+| Türen 26–34 | Durchsuche die Räume vor der Verfolgung. Dunkle Räume und verschlossene Ausgänge sind möglich. |
+| Türen 35–45 | Seek verfolgt dich. Folge der mit `*` markierten Richtung und erreiche Tür 46 innerhalb von 30 Sekunden. |
 | Türen 46–49 | Erkunde die letzten normalen Räume. Der Rückweg in die Seek-Strecke ist versperrt. |
-| Tür 50 | Entschlüssle das Great Gate in der Grand Library und entkomme Figure. |
+| Tür 50 | Entschlüssle den PIN in der Grand Library und öffne das Great Gate. |
 
-Die acht normalen ASCII-Layouts werden wiederverwendet. Jeder Raum hat eigene Funde und einen eigenen Zustand für Dunkelheit und Schloss. Beim Betreten erscheint die Map. Mit `look` kannst du sie erneut anzeigen.
+Die normalen Räume verwenden acht wiederkehrende ASCII-Layouts. Funde, Dunkelheit und Schlösser werden pro Raum festgelegt. Mit `look` kannst du das Layout des aktuellen Raums erneut anzeigen.
 
 ## Begegnungen
 
 | Gegner | Warnsignal und Reaktion |
-| :--- | :--- |
-| **Rush** | `flicker flicker`. Du hast 6 Sekunden für `hide`. Nach der Entwarnung verlässt du dein Versteck mit `unhide`. |
-| **Screech** | `psst psst`. Tippe innerhalb von 3 Sekunden `peek`, sonst verlierst du 40 HP. |
-| **Seek** | Nach einer kurzen Cutscene startet der 30-Sekunden-Timer. Wähle `left` oder `right` auf der mit `*` markierten Seite. Eine falsche Wahl kostet 5 Sekunden und lässt dich im selben Raum. |
-| **Figure** | Wenn er dich in der Grand Library hört, hast du 4 Sekunden für `hide`. Warte auf die Entwarnung und tippe dann `unhide`. |
+| --- | --- |
+| **Rush** | Bei `flicker flicker` hast du sechs Sekunden für `hide`. Nach der Entwarnung verlässt du dein Versteck mit `unhide`. |
+| **Screech** | Bei `psst psst` hast du drei Sekunden für `peek`. Ohne rechtzeitige Reaktion verursacht Screech 40 Schaden. |
+| **Seek** | Nach der Cutscene startet der 30-Sekunden-Timer. Wähle `left` oder `right` entsprechend dem `*`. Eine falsche Wahl kostet fünf Sekunden und lässt dich im selben Raum. |
+| **Figure** | Wenn Figure dich in der Grand Library hört, hast du vier Sekunden für `hide`. Warte auf die Entwarnung und tippe dann `unhide`. |
 
-Die Timer laufen auch ohne Eingabe weiter. Ein Befehl zählt, sobald du ihn mit **Enter** abschickst.
+Die Timer laufen auch ohne Eingabe weiter. Schicke deine Befehle mit **Enter** ab.
 
 ## Tür 50 · Grand Library
 
-1. `source` zeigt die **Reihenfolge der sechs Symbole** für den PIN.
-2. `findbook` findet ein Buch mit einer Zuordnung, etwa `STAR = 7`. Es gibt acht unterschiedliche Bücher. Zwei Symbole gehören nicht zum PIN.
+1. `source` zeigt die Reihenfolge der sechs Symbole für den PIN.
+2. `findbook` findet ein Buch mit einer Zuordnung wie `STAR = 7`. Es gibt acht verschiedene Bücher. Sechs der acht Symbole werden für den PIN gebraucht.
 3. `notes` zeigt alle bisher gefundenen Zuordnungen.
-4. Setze die sechs Ziffern in der Reihenfolge aus `source` zusammen und gib sie mit `code` ein, zum Beispiel `code 072931`. Der PIN wird pro Durchlauf erzeugt und kann mit einer Null beginnen.
+4. Setze die sechs Ziffern in der Reihenfolge aus `source` zusammen und gib sie mit `code` ein, etwa `code 072931`. Der PIN wird pro Durchlauf erzeugt und kann mit einer Null beginnen.
 
-Bei jedem neuen Buchfund besteht eine **15-%-Chance**, dass Figure dich hört. Ein falscher sechsstelliger PIN löst die Warnung immer aus. Der richtige PIN öffnet das Great Gate und beendet den Run erfolgreich.
+Bei jedem neuen Buchfund besteht eine **15-%-Chance**, dass Figure dich hört. Ein falscher sechsstelliger PIN löst die Warnung immer aus. Der richtige PIN öffnet das Great Gate und beendet den Durchlauf erfolgreich.
 
 ## Ausrüstung und Jeffs Shop
 
-| Item | Preis bei Jeff | Wirkung |
-| :--- | ---: | :--- |
-| Crucifix | 250 Coins | `use crucifix` aktiviert Schutz für einen Treffer. |
-| Lockpick | 50 Coins | Öffnet automatisch eine verschlossene Tür. Wird dabei vor einem vorhandenen Schlüssel verbraucht. |
-| Flashlight | 100 Coins | Verhindert Fehlschläge durch Dunkelheit, solange sie eingeschaltet und geladen ist. |
-| Bandage | 75 Coins | `use bandage` heilt bis zu 15 HP. Bei vollen HP bleibt sie im Inventar. |
+| Gegenstand | Preis bei Jeff | Wirkung |
+| --- | ---: | --- |
+| Crucifix | 250 Münzen | `use crucifix` aktiviert den Schutz vor einem schädigenden Treffer. |
+| Lockpick | 50 Münzen | Öffnet eine verschlossene Tür und wird dabei vor einem vorhandenen Schlüssel verbraucht. |
+| Flashlight | 100 Münzen | Verhindert Fehlschläge durch Dunkelheit, solange sie geladen und eingeschaltet ist. |
+| Bandage | 75 Münzen | `use bandage` heilt bis zu 15 HP. Bei vollen HP bleibt die Bandage im Inventar. |
 
-Batterien findest du in Räumen. Mit `use battery` lädst du die Flashlight um bis zu 30 Prozentpunkte auf. Beim Einschalten beginnt der Verbrauch von 10 Prozentpunkten pro 30 Sekunden.
+Eine eingeschaltete Taschenlampe verliert alle 30 Sekunden 10 Prozentpunkte Ladung. Mit `use battery` lädst du sie um bis zu 30 Prozentpunkte auf. Beim Ablegen schaltet sich die Lampe aus und behält ihren Ladestand.
 
-Ein aktives Crucifix kann auch einen tödlichen Treffer abfangen. **Figure kann danach erneut erscheinen.** Bei Seek blockiert es einen Fangversuch und gibt dir 10 zusätzliche Sekunden.
+Das Inventar fasst **15 Gewichtspunkte**. Die Flashlight wiegt 3, Batterie und Crucifix wiegen je 2, alle anderen Gegenstände je 1. Ein zu schwerer Fund bleibt im Raum. Mit `drop <item>` schaffst du Platz und kannst abgelegte Gegenstände mit `search` wieder aufnehmen.
+
+Ein aktives Crucifix kann auch einen tödlichen Treffer abfangen. Bei Seek blockiert es einen Fangversuch und gibt dir zehn zusätzliche Sekunden. Figure kann nach einem abgewehrten Treffer erneut erscheinen.
 
 ## Befehle
 
 | Befehl | Funktion |
-| :--- | :--- |
-| `continue` / `return` | Vorwärtsgehen oder in den vorherigen erreichbaren Raum zurückkehren |
-| `look` / `search` | Raumkarte anzeigen oder nach Coins und Items suchen |
-| `status` / `inventory` | Spielerstatus oder Inventar anzeigen |
-| `flashlight on` / `flashlight off` | Flashlight einschalten oder ausschalten |
-| `shop` / `buy <item>` | Angebot ansehen oder in Raum 25 einkaufen, etwa mit `buy lockpick` |
-| `use bandage` / `use battery` / `use crucifix` | Ausrüstung verwenden |
-| `hide` / `unhide` / `peek` | Auf Monster reagieren |
-| `left` / `right` | Während Seek die Richtung wählen |
-| `source` / `findbook` / `notes` / `code <PIN>` | Das Rätsel in der Grand Library lösen |
-| `help` / `quit` | Befehlsübersicht anzeigen oder das Spiel beenden |
+| --- | --- |
+| `continue` | Durch die nächste Tür gehen. |
+| `back` / `return` | In den vorherigen erreichbaren Raum zurückgehen. |
+| `look` | Das ASCII-Layout des aktuellen Raums anzeigen. |
+| `search` | Den aktuellen Raum nach Münzen und Gegenständen durchsuchen. |
+| `map` | Alle Räume und ihre noch vorhandenen Gegenstände anzeigen. `>>` markiert deinen Standort. |
+| `status` / `inventory` | Spielerstatus oder Inventar anzeigen. |
+| `flashlight on` / `flashlight off` | Die Taschenlampe ein- oder ausschalten. |
+| `shop` / `buy <item>` | Jeffs Angebot anzeigen oder in Raum 25 einkaufen, etwa mit `buy lockpick`. |
+| `use bandage` / `use battery` / `use crucifix` | Ausrüstung verwenden. |
+| `drop <item>` | Einen Gegenstand im aktuellen Raum ablegen, etwa mit `drop bandage`. |
+| `hide` / `unhide` / `peek` | Auf Monster reagieren. |
+| `left` / `right` | Während der Seek-Verfolgung die Richtung wählen. |
+| `source` / `findbook` / `notes` / `code <PIN>` | Das Rätsel in der Grand Library lösen. |
+| `help` / `quit` | Befehlsübersicht anzeigen oder das Spiel beenden. |
 
 ## Starten
 
-Voraussetzungen sind ein JDK, beispielsweise **JDK 21**, und Maven für den Build im Terminal. In IntelliJ IDEA kannst du das Projekt über die `pom.xml` öffnen und die Main-Methode in `Zork2.java` starten.
+Du brauchst ein JDK, beispielsweise **JDK 21**, und Maven für den Build im Terminal. In IntelliJ IDEA öffnest du das Projekt über die `pom.xml` und startest die Main-Methode in `Zork2.java`.
 
-Alternativ im Projektordner:
+Im Terminal kannst du das Projekt im Repo-Ordner bauen und starten.
 
 ```bash
 mvn clean package
 java -cp target/classes ch.bbw.zork.Zork2
 ```
 
+## Tests
+
+Die JUnit-Tests decken `Game`, `Player`, `Item`, `Room`, `JeffShop`, `LibraryPuzzle`, `MonsterController` und `SeekController` ab. Die Game-Tests prüfen unter anderem verschlossene Türen, Schlüsselverbrauch, Rückwege, das Ablegen von Gegenständen und die Kartenanzeige.
+
+```bash
+mvn clean test
+```
+
 ## Dokumentation
 
-- [Räumlichkeiten und ursprüngliche Skizze](docs/doors-raeumlichkeiten-doc.md)
-- [Dokumentation zu dunklen Räumen](docs/dunkle-raeume.md)
-- [Räumlichkeiten-UML](diagrams/doors-raeumlichkeiten-uml.png)
-- [Klassendiagramm](diagrams/doors-klassendiagramm.png)
-
-Die ergänzenden Dokumente und Diagramme zeigen teilweise frühere Entwicklungsstände.
+- [Klassendiagramm (PNG)](diagrams/doors-klassendiagramm.png)
+- [Raumskizze (PNG)](diagrams/doors-raeumlichkeiten-uml.png)
+- [Dokumentation der Räumlichkeiten](docs/doors-raeumlichkeiten-doc.md)
+- [Raumplan mit Regeln pro Bereich](docs/doors-raumplan.md)
+- [Dunkle Räume und Taschenlampe](docs/dunkle-raeume.md)
 
 Das Projekt nutzt das bereitgestellte Zork-Template von Michael Kölling, überarbeitet von Rinaldo Lanza. Spielkonzept und Entscheidungen stammen von uns. KI hat uns bei der Dokumentation, bei Erklärungen und bei Codevorschlägen unterstützt.
-
-> Wenn das Licht flackert, lies nicht erst die README.
