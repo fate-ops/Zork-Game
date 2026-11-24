@@ -61,18 +61,18 @@ Ein aktives Crucifix kann auch einen tödlichen Treffer abfangen. **Figure kann 
 
 ## Befehle
 
-| Befehl | Funktion |
-| :--- | :--- |
-| `continue` / `return` | Vorwärtsgehen oder in den vorherigen erreichbaren Raum zurückkehren |
-| `look` / `search` | Raumkarte anzeigen oder nach Coins und Items suchen |
-| `status` / `inventory` | Spielerstatus oder Inventar anzeigen |
-| `flashlight on` / `flashlight off` | Flashlight einschalten oder ausschalten |
-| `shop` / `buy <item>` | Angebot ansehen oder in Raum 25 einkaufen, etwa mit `buy lockpick` |
+| Befehl                                         | Funktion |
+|:-----------------------------------------------| :--- |
+| `continue` / `return/back`                        | Vorwärtsgehen oder in den vorherigen erreichbaren Raum zurückkehren |
+| `look` / `search`                              | Raumkarte anzeigen oder nach Coins und Items suchen |
+| `status` / `inventory`                         | Spielerstatus oder Inventar anzeigen |
+| `flashlight on` / `flashlight off`             | Flashlight einschalten oder ausschalten |
+| `shop` / `buy <item>`                          | Angebot ansehen oder in Raum 25 einkaufen, etwa mit `buy lockpick` |
 | `use bandage` / `use battery` / `use crucifix` | Ausrüstung verwenden |
-| `hide` / `unhide` / `peek` | Auf Monster reagieren |
-| `left` / `right` | Während Seek die Richtung wählen |
+| `hide` / `unhide` / `peek`                     | Auf Monster reagieren |
+| `left` / `right`                               | Während Seek die Richtung wählen |
 | `source` / `findbook` / `notes` / `code <PIN>` | Das Rätsel in der Grand Library lösen |
-| `help` / `quit` | Befehlsübersicht anzeigen oder das Spiel beenden |
+| `help` / `quit`                                | Befehlsübersicht anzeigen oder das Spiel beenden |
 
 ## Starten
 
