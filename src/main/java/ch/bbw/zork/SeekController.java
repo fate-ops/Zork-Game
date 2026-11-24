@@ -269,6 +269,10 @@ public class SeekController {
         return true;
     }
 
+    /**
+     * Zeigt die Seek-Map mit dem {@code *} an der richtigen Seite, die
+     * Raumnummer und die verbleibende Zeit.
+     */
     private void showRoom() {
         String layout = RoomLayouts.SEEK_RUN
                 .replaceFirst(
@@ -291,6 +295,12 @@ public class SeekController {
         System.out.println("left / right");
     }
 
+    /**
+     * Berechnet die verbleibende Zeit der Verfolgung.
+     *
+     * @return die Restzeit in Sekunden (aufgerundet), 0 wenn keine
+     *         Verfolgung läuft
+     */
     public long getRemainingSeconds() {
         if (!chasing) {
             return 0;
@@ -304,14 +314,30 @@ public class SeekController {
         return (remaining + SECOND - 1) / SECOND;
     }
 
+    /**
+     * Gibt an, ob die Verfolgung gerade läuft (Cutscene oder Jagd).
+     *
+     * @return {@code true}, wenn Seek aktiv ist
+     */
     public boolean isRunning() {
         return intro || chasing;
     }
 
+    /**
+     * Gibt an, ob der Spieler Seek erfolgreich entkommen ist.
+     *
+     * @return {@code true}, wenn Raum 46 erreicht wurde
+     */
     public boolean hasCompleted() {
         return completed;
     }
 
+    /**
+     * Liefert den Raum, in dem sich der Spieler während der Verfolgung
+     * befindet.
+     *
+     * @return der aktuelle Raum, oder {@code null} vor dem Start
+     */
     public Room getCurrentRoom() {
         return currentRoom;
     }
