@@ -3,11 +3,19 @@ package ch.bbw.zork;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Der Spieler mit Lebenspunkten, Coins, Inventar, Flashlight und
+ * Crucifix-Schutz. Das Inventar ist durch ein Maximalgewicht begrenzt.
+ */
 public class Player {
 
+    /** Maximale und Start-Lebenspunkte des Spielers. */
     public static final int MAX_HP = 100;
+    /** Maximales Gewicht, das der Spieler tragen kann. */
     public static final int MAX_WEIGHT = 15;
+    /** Lebenspunkte, die eine Bandage höchstens heilt. */
     public static final int BANDAGE_HEAL = 15;
+    /** Prozentpunkte, die eine Batterie höchstens nachlädt. */
     public static final int BATTERY_RECHARGE = 30;
 
     private int hp;
@@ -21,18 +29,34 @@ public class Player {
     private long flashlightActiveNanos = 0;
     private long flashlightLastUpdateNanos = 0;
 
+    /**
+     * Erstellt einen Spieler mit vollen HP, ohne Coins und mit leerem
+     * Inventar.
+     */
     public Player() {
         this.hp = MAX_HP;
         this.coins = 0;
         this.inventory = new ArrayList<>();
     }
 
+    /**
+     * Legt einen Gegenstand ins Inventar. {@code null} wird ignoriert. Das
+     * Maximalgewicht wird hier nicht geprüft, dafür gibt es
+     * {@link #canCarry(Item)}.
+     *
+     * @param item der Gegenstand
+     */
     public void addItem(Item item) {
         if (item != null) {
             inventory.add(item);
         }
     }
 
+    /**
+     * Berechnet das Gewicht aller getragenen Gegenstände.
+     *
+     * @return das Gesamtgewicht des Inventars
+     */
     public int getCarriedWeight() {
         int total = 0;
 
@@ -43,15 +67,36 @@ public class Player {
         return total;
     }
 
+    /**
+     * Prüft, ob ein Gegenstand noch ins Inventar passt, ohne das
+     * Maximalgewicht zu überschreiten.
+     *
+     * @param item der Gegenstand
+     * @return {@code true}, wenn der Gegenstand getragen werden kann
+     */
     public boolean canCarry(Item item) {
         return item != null
                 && item.getWeight() <= MAX_WEIGHT - getCarriedWeight();
     }
 
+    /**
+     * Entfernt einen Gegenstand eines Typs aus dem Inventar.
+     *
+     * @param type der Typ des Gegenstands
+     * @return {@code true}, wenn ein Gegenstand entfernt wurde
+     */
     public boolean removeItem(ItemType type) {
         return takeItem(type) != null;
     }
 
+    /**
+     * Nimmt den ersten Gegenstand eines Typs aus dem Inventar. Wird eine
+     * Flashlight entfernt, schaltet sie sich aus.
+     *
+     * @param type der Typ des Gegenstands
+     * @return der entfernte Gegenstand, oder {@code null}, wenn keiner
+     *         dieses Typs vorhanden ist
+     */
     public Item takeItem(ItemType type) {
         for (int i = 0; i < inventory.size(); i++) {
             Item item = inventory.get(i);
@@ -68,6 +113,13 @@ public class Player {
         return null;
     }
 
+    /**
+     * Prüft, ob der Spieler einen Gegenstand eines Typs besitzt.
+     *
+     * @param type der Typ des Gegenstands
+     * @return {@code true}, wenn mindestens ein solcher Gegenstand
+     *         vorhanden ist
+     */
     public boolean hasItem(ItemType type) {
         for (Item item : inventory) {
             if (item.getType() == type) {
@@ -78,6 +130,11 @@ public class Player {
         return false;
     }
 
+    /**
+     * Rechnet den Batterieverbrauch der eingeschalteten Flashlight nach.
+     * Je 30 Sekunden Leuchtzeit gehen 10 Prozentpunkte verloren. Bei 0 %
+     * schaltet sich die Lampe aus.
+     */
     private void updateFlashlightBattery() {
         if (!flashlightOn) {
             return;
@@ -106,11 +163,23 @@ public class Player {
         }
     }
 
+    /**
+     * Gibt an, ob die Flashlight eingeschaltet und nutzbar ist.
+     *
+     * @return {@code true}, wenn der Spieler eine eingeschaltete,
+     *         geladene Flashlight besitzt
+     */
     public boolean isFlashlightOn() {
         updateFlashlightBattery();
         return flashlightOn && hasItem(ItemType.FLASHLIGHT);
     }
 
+    /**
+     * Schaltet die Flashlight ein.
+     *
+     * @return {@code true}, wenn die Flashlight jetzt an ist,
+     *         {@code false} ohne Flashlight oder bei leerer Batterie
+     */
     public boolean turnFlashlightOn() {
         updateFlashlightBattery();
 
@@ -126,17 +195,29 @@ public class Player {
         return true;
     }
 
+    /**
+     * Schaltet die Flashlight aus. Der Batterieverbrauch pausiert dabei.
+     */
     public void turnFlashlightOff() {
         updateFlashlightBattery();
         flashlightOn = false;
     }
 
+    /**
+     * Liefert den Ladestand der Flashlight.
+     *
+     * @return der Ladestand in Prozent von 0 bis 100
+     */
     public int getFlashlightBattery() {
         updateFlashlightBattery();
         return flashlightBattery;
     }
 
     // Eine gekaufte Flashlight ersetzt die alte und ist voll geladen.
+    /**
+     * Ersetzt die Flashlight durch eine neue. Die neue ist voll geladen
+     * und ausgeschaltet.
+     */
     public void replaceFlashlight() {
         removeItem(ItemType.FLASHLIGHT);
 
@@ -148,6 +229,13 @@ public class Player {
         addItem(new Item(ItemType.FLASHLIGHT, "Flashlight"));
     }
 
+    /**
+     * Lädt die Flashlight mit einer Batterie nach. Die Batterie wird nur
+     * verbraucht, wenn eine Flashlight vorhanden und nicht voll geladen
+     * ist.
+     *
+     * @return die nachgeladenen Prozentpunkte, 0 wenn nichts geladen wurde
+     */
     public int useBattery() {
         updateFlashlightBattery();
 
@@ -166,6 +254,13 @@ public class Player {
         return charged;
     }
 
+    /**
+     * Heilt den Spieler mit einer Bandage um bis zu {@link #BANDAGE_HEAL}
+     * HP, höchstens bis {@link #MAX_HP}.
+     *
+     * @return die geheilten HP, 0 wenn nichts geheilt wurde (zum Beispiel
+     *         bei vollen HP, dann bleibt die Bandage erhalten)
+     */
     public int useBandage() {
         // Bei vollen HP wird die Bandage nicht entfernt.
         if (!isAlive() || hp >= MAX_HP || !removeItem(ItemType.BANDAID)) {
@@ -178,10 +273,21 @@ public class Player {
         return healed;
     }
 
+    /**
+     * Gibt an, ob der Crucifix-Schutz aktiv ist.
+     *
+     * @return {@code true}, wenn der nächste Treffer blockiert wird
+     */
     public boolean hasCrucifixProtection() {
         return crucifixProtection;
     }
 
+    /**
+     * Aktiviert den Crucifix-Schutz und verbraucht dafür ein Crucifix.
+     *
+     * @return {@code true}, wenn der Schutz aktiviert wurde,
+     *         {@code false} ohne Crucifix oder bei schon aktivem Schutz
+     */
     public boolean activateCrucifix() {
         // Aktiver Schutz kann nicht durch weitere Items gestapelt werden.
         if (!isAlive()
@@ -194,6 +300,12 @@ public class Player {
         return true;
     }
 
+    /**
+     * Beschreibt das Inventar mit allen Gegenständen, dem Zustand der
+     * Flashlight und dem Gesamtgewicht.
+     *
+     * @return der Text für die Anzeige mit {@code inventory}
+     */
     public String inventoryDescription() {
         String weightLine = "Weight: " + getCarriedWeight() + "/" + MAX_WEIGHT;
 
@@ -227,18 +339,40 @@ public class Player {
         return description.append(weightLine).toString();
     }
 
+    /**
+     * Liefert die aktuellen Lebenspunkte.
+     *
+     * @return die HP von 0 bis {@link #MAX_HP}
+     */
     public int getHp() {
         return hp;
     }
 
+    /**
+     * Liefert die Anzahl Coins des Spielers.
+     *
+     * @return die Coins
+     */
     public int getCoins() {
         return coins;
     }
 
+    /**
+     * Fügt Coins hinzu. Negative Beträge werden ignoriert.
+     *
+     * @param amount die Anzahl Coins
+     */
     public void addCoins(int amount) {
         coins += Math.max(0, amount);
     }
 
+    /**
+     * Gibt Coins aus, wenn genug vorhanden sind.
+     *
+     * @param amount der Betrag
+     * @return {@code true}, wenn bezahlt wurde, {@code false} bei
+     *         negativem Betrag oder zu wenig Coins
+     */
     public boolean spendCoins(int amount) {
         if (amount < 0 || coins < amount) {
             return false;
@@ -248,6 +382,12 @@ public class Player {
         return true;
     }
 
+    /**
+     * Fügt dem Spieler Schaden zu. Ein aktiver Crucifix-Schutz blockiert
+     * genau einen Treffer, egal wie hoch er ist. Die HP sinken nie unter 0.
+     *
+     * @param amount der Schaden, Werte bis 0 werden ignoriert
+     */
     public void takeDamage(int amount) {
         if (amount <= 0 || !isAlive()) {
             return;
@@ -270,6 +410,11 @@ public class Player {
         }
     }
 
+    /**
+     * Gibt an, ob der Spieler noch lebt.
+     *
+     * @return {@code true}, wenn die HP über 0 liegen
+     */
     public boolean isAlive() {
         return hp > 0;
     }
