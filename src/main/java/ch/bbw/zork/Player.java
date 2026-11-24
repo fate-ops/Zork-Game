@@ -6,6 +6,7 @@ import java.util.List;
 public class Player {
 
     public static final int MAX_HP = 100;
+    public static final int MAX_WEIGHT = 15;
     public static final int BANDAGE_HEAL = 15;
     public static final int BATTERY_RECHARGE = 30;
 
@@ -30,6 +31,21 @@ public class Player {
         if (item != null) {
             inventory.add(item);
         }
+    }
+
+    public int getCarriedWeight() {
+        int total = 0;
+
+        for (Item item : inventory) {
+            total += item.getWeight();
+        }
+
+        return total;
+    }
+
+    public boolean canCarry(Item item) {
+        return item != null
+                && item.getWeight() <= MAX_WEIGHT - getCarriedWeight();
     }
 
     public boolean removeItem(ItemType type) {
@@ -174,8 +190,10 @@ public class Player {
     }
 
     public String inventoryDescription() {
+        String weightLine = "Weight: " + getCarriedWeight() + "/" + MAX_WEIGHT;
+
         if (inventory.isEmpty()) {
-            return "Your inventory is empty.";
+            return "Your inventory is empty.\n" + weightLine;
         }
 
         StringBuilder description = new StringBuilder(
@@ -201,7 +219,7 @@ public class Player {
             description.append("\n");
         }
 
-        return description.toString();
+        return description.append(weightLine).toString();
     }
 
     public int getHp() {
