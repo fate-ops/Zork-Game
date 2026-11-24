@@ -35,15 +35,6 @@ public class JeffShop {
         ItemType type;
         String name;
         int price;
-        Item item = new Item(type, name);
-
-        boolean replacesFlashlight = type == ItemType.FLASHLIGHT
-                && player.hasItem(ItemType.FLASHLIGHT);
-
-        if (!replacesFlashlight && !player.canCarry(item)) {
-            System.out.println("Jeff: Your inventory is too heavy for that.");
-            return;
-        }
 
         if ("crucifix".equals(product)) {
             type = ItemType.CRUCIFIX;
@@ -69,6 +60,16 @@ public class JeffShop {
             System.out.println(
                     "Use: buy crucifix / buy lockpick / buy flashlight / buy bandage"
             );
+            return;
+        }
+
+        Item item = new Item(type, name);
+
+        boolean replacesFlashlight = type == ItemType.FLASHLIGHT
+                && player.hasItem(ItemType.FLASHLIGHT);
+
+        if (!replacesFlashlight && !player.canCarry(item)) {
+            System.out.println("Jeff: Your inventory is too heavy for that.");
             return;
         }
 
