@@ -55,6 +55,13 @@ public class MonsterController {
         this.clock = clock;
     }
 
+    /**
+     * Prüft beim Betreten eines Raums, ob ein Monster erscheint. Ab Raum 5
+     * wird zuerst Rush gewürfelt, danach in dunklen Räumen Screech. In
+     * Jeffs Shop und während einer laufenden Begegnung passiert nichts.
+     *
+     * @param room der betretene Raum
+     */
     public void onEnter(Room room) {
         if (room.getNumber() == JeffShop.ROOM_NUMBER
                 || rushActive
@@ -77,12 +84,24 @@ public class MonsterController {
         }
     }
 
+    /**
+     * Startet eine Begegnung mit Figure. Der Spieler hat vier Sekunden Zeit,
+     * sich mit {@code hide} zu verstecken.
+     */
     public void warnFigure() {
         figureActive = true;
         deadline = clock.getAsLong() + FIGURE_TIME;
         System.out.println("Figure heard you! Type 'hide' within 4 seconds!");
     }
 
+    /**
+     * Prüft, ob eine Reaktionsfrist abgelaufen ist, und wertet die
+     * Begegnung aus. Der Spieler nimmt Schaden, wenn er nicht rechtzeitig
+     * reagiert hat. Ein Crucifix kann einen tödlichen Treffer verhindern.
+     *
+     * @return {@code true}, wenn eine Begegnung abgeschlossen wurde und
+     *         dabei eine Meldung ausgegeben wurde
+     */
     public boolean update() {
         long now = clock.getAsLong();
 
