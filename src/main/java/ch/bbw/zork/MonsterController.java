@@ -3,6 +3,12 @@ package ch.bbw.zork;
 import java.util.Random;
 import java.util.function.LongSupplier;
 
+/**
+ * Steuert die Monster Rush, Screech und Figure. Die Klasse würfelt das
+ * Erscheinen beim Betreten eines Raums, überwacht die Reaktionsfristen
+ * und verarbeitet die passenden Befehle wie {@code hide}, {@code unhide}
+ * und {@code peek}. Seek wird von {@link SeekController} gesteuert.
+ */
 public class MonsterController {
 
     private static final long RUSH_TIME = 6_000_000_000L;
@@ -20,10 +26,25 @@ public class MonsterController {
 
     private long deadline;
 
+    /**
+     * Erstellt einen Controller, der die Systemzeit als Uhr verwendet.
+     *
+     * @param player der Spieler, der Schaden erleiden kann
+     * @param random Zufallsquelle für das Erscheinen der Monster
+     */
     public MonsterController(Player player, Random random) {
         this(player, random, System::nanoTime);
     }
 
+    /**
+     * Erstellt einen Controller mit frei wählbarer Uhr. Dieser Konstruktor
+     * ist für Tests gedacht, damit Zeitfristen ohne Warten geprüft werden
+     * können.
+     *
+     * @param player der Spieler, der Schaden erleiden kann
+     * @param random Zufallsquelle für das Erscheinen der Monster
+     * @param clock  Zeitquelle in Nanosekunden
+     */
     MonsterController(
             Player player,
             Random random,
