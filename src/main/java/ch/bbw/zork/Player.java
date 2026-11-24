@@ -49,18 +49,23 @@ public class Player {
     }
 
     public boolean removeItem(ItemType type) {
+        return takeItem(type) != null;
+    }
+
+    public Item takeItem(ItemType type) {
         for (int i = 0; i < inventory.size(); i++) {
-            if (inventory.get(i).getType() == type) {
+            Item item = inventory.get(i);
+
+            if (item.getType() == type) {
                 if (type == ItemType.FLASHLIGHT) {
                     turnFlashlightOff();
                 }
 
-                inventory.remove(i);
-                return true;
+                return inventory.remove(i);
             }
         }
 
-        return false;
+        return null;
     }
 
     public boolean hasItem(ItemType type) {
