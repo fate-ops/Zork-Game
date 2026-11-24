@@ -70,6 +70,7 @@ Ein aktives Crucifix kann auch einen tödlichen Treffer abfangen. **Figure kann 
 | `flashlight on` / `flashlight off`             | Flashlight einschalten oder ausschalten |
 | `shop` / `buy <item>`                          | Angebot ansehen oder in Raum 25 einkaufen, etwa mit `buy lockpick` |
 | `use bandage` / `use battery` / `use crucifix` | Ausrüstung verwenden |
+| `drop <item>` | Legt ein Item im aktuellen Raum ab und macht Platz im Inventar. Mit `search` kannst du es wieder aufnehmen. Beispiel: `drop bandage`. |
 | `hide` / `unhide` / `peek`                     | Auf Monster reagieren |
 | `left` / `right`                               | Während Seek die Richtung wählen |
 | `source` / `findbook` / `notes` / `code <PIN>` | Das Rätsel in der Grand Library lösen |
