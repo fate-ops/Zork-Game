@@ -8,6 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Das Rätsel der Grand Library bei Tür 50. Beim Erstellen werden acht
+ * Symbole mit je einer Ziffer verknüpft. Sechs davon ergeben in einer
+ * zufälligen Reihenfolge den PIN des Great Gate, die übrigen zwei dienen
+ * als Ablenkung. Der Spieler findet die Zuordnungen in Büchern.
+ */
 public final class LibraryPuzzle {
 
     private static final int PIN_LENGTH = 6;
@@ -17,6 +23,12 @@ public final class LibraryPuzzle {
     private final Map<String, Integer> notes = new LinkedHashMap<>();
     private final String correctPin;
 
+    /**
+     * Erzeugt ein neues Rätsel mit zufälliger Symbolreihenfolge, zufälligen
+     * Ziffern und dem daraus entstehenden PIN.
+     *
+     * @param random Zufallsquelle für Reihenfolge und Ziffern
+     */
     public LibraryPuzzle(Random random) {
         List<String> symbols = new ArrayList<>(Arrays.asList(
                 "MOON", "EYE", "STAR", "KEY", "CROWN", "FLAME", "DIAMOND", "CROSS"
