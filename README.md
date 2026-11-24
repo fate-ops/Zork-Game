@@ -65,6 +65,7 @@ Ein aktives Crucifix kann auch einen tödlichen Treffer abfangen. **Figure kann 
 |:-----------------------------------------------| :--- |
 | `continue` / `return/back`                        | Vorwärtsgehen oder in den vorherigen erreichbaren Raum zurückkehren |
 | `look` / `search`                              | Raumkarte anzeigen oder nach Coins und Items suchen |
+| `map` | Zeigt alle Räume und ihre noch vorhandenen Gegenstände. `>>` markiert deinen aktuellen Raum. |
 | `status` / `inventory`                         | Spielerstatus oder Inventar anzeigen |
 | `flashlight on` / `flashlight off`             | Flashlight einschalten oder ausschalten |
 | `shop` / `buy <item>`                          | Angebot ansehen oder in Raum 25 einkaufen, etwa mit `buy lockpick` |
