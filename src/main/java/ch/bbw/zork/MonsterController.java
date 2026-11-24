@@ -183,6 +183,16 @@ public class MonsterController {
         return false;
     }
 
+    /**
+     * Verarbeitet Befehle, die zu einer Monsterbegegnung gehören
+     * ({@code hide}, {@code unhide} und {@code peek}). Im Versteck ist nur
+     * {@code unhide} erlaubt, und während Figure naht, ist nur
+     * {@code hide} möglich.
+     *
+     * @param command der eingegebene Befehl
+     * @return {@code true}, wenn der Befehl hier behandelt wurde und das
+     *         Spiel ihn nicht weiter bearbeiten soll
+     */
     public boolean handleCommand(Command command) {
         update();
 
@@ -276,10 +286,21 @@ public class MonsterController {
         return false;
     }
 
+    /**
+     * Gibt an, ob sich der Spieler gerade versteckt.
+     *
+     * @return {@code true}, wenn der Spieler versteckt ist
+     */
     public boolean isHidden() {
         return hidden;
     }
 
+    /**
+     * Gibt an, ob eine Begegnung oder das Verstecken den Raumwechsel
+     * sperrt.
+     *
+     * @return {@code true}, wenn der Spieler den Raum nicht wechseln darf
+     */
     public boolean blocksMovement() {
         return rushActive || screechActive || figureActive || hidden;
     }
