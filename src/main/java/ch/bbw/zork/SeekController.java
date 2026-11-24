@@ -3,9 +3,17 @@ package ch.bbw.zork;
 import java.util.Random;
 import java.util.function.LongSupplier;
 
+/**
+ * Steuert die Verfolgung durch Seek in den Räumen 35 bis 45. Nach einer
+ * kurzen Cutscene muss der Spieler innerhalb eines Zeitlimits bei jeder
+ * Tür mit {@code left} oder {@code right} die richtige Seite wählen,
+ * die ein {@code *} markiert. Ziel ist Raum 46.
+ */
 public class SeekController {
 
+    /** Nummer des Raums, in dem die Verfolgung beginnt. */
     public static final int FIRST_ROOM = 35;
+    /** Nummer des Raums, der das Ziel der Flucht ist. */
     public static final int ESCAPE_ROOM = 46;
 
     private static final long SECOND = 1_000_000_000L;
@@ -28,10 +36,25 @@ public class SeekController {
     private long introStarted;
     private long deadline;
 
+    /**
+     * Erstellt einen Controller, der die Systemzeit als Uhr verwendet.
+     *
+     * @param player der Spieler, der gefangen werden kann
+     * @param random Zufallsquelle für die richtige Seite
+     */
     public SeekController(Player player, Random random) {
         this(player, random, System::nanoTime);
     }
 
+    /**
+     * Erstellt einen Controller mit frei wählbarer Uhr. Dieser Konstruktor
+     * ist für Tests gedacht, damit Zeitfristen ohne Warten geprüft werden
+     * können.
+     *
+     * @param player der Spieler, der gefangen werden kann
+     * @param random Zufallsquelle für die richtige Seite
+     * @param clock  Zeitquelle in Nanosekunden
+     */
     SeekController(
             Player player,
             Random random,
