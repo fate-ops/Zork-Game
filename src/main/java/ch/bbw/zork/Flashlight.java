@@ -1,5 +1,7 @@
 package ch.bbw.zork;
 
+import java.util.function.LongSupplier;
+
 /**
  * Eine Taschenlampe mit eigenem Ladestand und Ein/Aus-Zustand.
  * Pro 30 Sekunden Leuchtzeit verliert sie 10 Prozentpunkte.
@@ -8,6 +10,7 @@ public final class Flashlight extends Item {
 
     private static final long DRAIN_INTERVAL_NANOS = 30_000_000_000L;
 
+    private final LongSupplier clock;
     private int battery = 100;
     private boolean on;
     private long activeNanos;
@@ -15,7 +18,17 @@ public final class Flashlight extends Item {
 
     /** Erstellt eine voll geladene, ausgeschaltete Taschenlampe. */
     public Flashlight() {
+        this(System::nanoTime);
+    }
+
+    /**
+     * Erstellt eine Taschenlampe mit einer steuerbaren Uhr für Tests.
+     *
+     * @param clock Zeitquelle in Nanosekunden
+     */
+    Flashlight(LongSupplier clock) {
         super(ItemType.FLASHLIGHT, "Flashlight");
+        this.clock = clock;
     }
 
     /**
@@ -30,7 +43,7 @@ public final class Flashlight extends Item {
         }
 
         if (!on) {
-            lastUpdateNanos = System.nanoTime();
+            lastUpdateNanos = clock.getAsLong();
             on = true;
         }
         return true;
@@ -73,7 +86,7 @@ public final class Flashlight extends Item {
             return;
         }
 
-        long now = System.nanoTime();
+        long now = clock.getAsLong();
         activeNanos += now - lastUpdateNanos;
         lastUpdateNanos = now;
 
