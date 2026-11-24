@@ -1,66 +1,40 @@
-# Dunkle Räume & Taschenlampe
+# Dunkle Räume und Taschenlampe
 
-Erweiterung von Zork/DOORS: Einige Räume sind dunkel. Ohne Taschenlampe
-(Flashlight) können Suchen und Weitergehen fehlschlagen.
+Dunkelheit kann die Suche nach Gegenständen oder den Weg durch die nächste Tür erschweren. Eine **eingeschaltete, geladene Taschenlampe** verhindert diese Fehlschläge.
 
 ## Regeln
 
-| Situation | ohne Flashlight | mit Flashlight |
-|---|---|---|
-| `search` im dunklen Raum | 25 % Chance: nichts gefunden, man muss nochmals suchen | findet zuverlässig |
-| `continue` im dunklen Raum | 20 % Chance: Tür nicht gefunden, man bleibt im Raum | geht zuverlässig weiter |
-| heller Raum | normal | normal |
+| Aktion im dunklen Raum | Ohne eingeschaltete, geladene Lampe | Mit eingeschalteter, geladener Lampe |
+| --- | --- | --- |
+| `search` | 25 % Chance auf einen Fehlschlag durch Dunkelheit. Münzen und Gegenstände bleiben im Raum. | Die Suche scheitert nicht an der Dunkelheit. Das Tragelimit gilt weiterhin. |
+| `continue` | 20 % Chance, die nächste Tür im Dunkeln nicht zu finden. Du bleibst im Raum. | Du findest die Tür. Ein verschlossener Ausgang braucht weiterhin einen Schlüssel oder Lockpick. |
+| `back` / `return` | Keine Dunkelheitsprüfung. | Keine Dunkelheitsprüfung. |
 
-## Spielablauf
+In hellen Räumen gibt es keine Fehlschläge durch Dunkelheit. Aktive Monster oder gesperrte Rückwege können die Bewegung weiterhin blockieren.
 
-- Raum 3 und Raum 4 sind dunkel.
-- Die Flashlight liegt in **Raum 3**. Man muss sie also im Dunkeln suchen.
-- Betritt man einen dunklen Raum, erscheint: *"It is very dark in here. A flashlight would help."*
+## Wo Dunkelheit und Taschenlampe vorkommen
 
-## Umsetzung
+- Normale Räume zwischen Tür 2 und 49 haben eine **25-%-Chance**, dunkel zu sein. Jeffs Shop und die Seek-Strecke sind davon ausgenommen.
+- Die Taschenlampe liegt in **einem zufällig ausgewählten Raum zwischen Tür 2 und 8**. Dieser Raum kann hell oder dunkel sein.
+- Beim Betreten eines dunklen Raums erscheint «It is very dark in here. Use a charged flashlight.»
+- In dunklen Räumen kann Screech auftauchen. Bei `psst psst` hast du drei Sekunden für `peek`, bevor er 40 Schaden verursacht. Eine eingeschaltete Lampe verhindert Fehlschläge durch Dunkelheit, während Screech weiterhin auftreten kann.
 
-### `Room`
-- Neues Attribut `private boolean dark` (Standard `false`).
-- `isDark()` gibt den Zustand zurück, `makeDark()` macht den Raum dunkel.
-- Gleiches Muster wie `locked` / `lock()` / `unlock()`.
-- `longDescription()` hängt bei dunklen Räumen einen Hinweis an. Der Raum ist
-  selbst für seine Beschreibung verantwortlich.
+## Taschenlampe bedienen
 
-### `Game`
-- Neues Attribut `private Random random`, erzeugt im Konstruktor.
-- Konstanten `SEARCH_FAIL_CHANCE = 25` und `CONTINUE_FAIL_CHANCE = 20`.
-- Neue Methode `failsInDarkness(int failChancePercent)`:
-    1. Raum hell → `false`
-    2. Spieler hat `ItemType.FLASHLIGHT` → `false`
-    3. sonst `random.nextInt(100) < failChancePercent`
-       (`nextInt(100)` liefert 0–99, bei 25 sind das genau 25 von 100 Werten)
-- Eine Methode für beide Fälle, nur die Wahrscheinlichkeit ist verschieden.
-  So gibt es keinen doppelten Code.
+Mit `flashlight on` schaltest du die Lampe ein und mit `flashlight off` wieder aus. Pro 30 Sekunden eingeschalteter Zeit verliert sie 10 Prozentpunkte Ladung. Bei 0 % geht sie aus. `use battery` lädt sie um bis zu 30 Prozentpunkte auf.
 
-### Wo die Prüfung steht (wichtige Entscheidungen)
+Mit `drop flashlight` legst du die Lampe ab und sie schaltet sich aus. Mit `search` kannst du sie später mit demselben Ladestand wieder aufnehmen.
 
-- **`searchRoom()`**: ganz am Anfang, **vor** `collectCoins()` und `collectItems()`.
-  Diese Methoden leeren den Raum. Stünde die Prüfung danach, wären Coins und
-  Items bei einer Fehlsuche verloren.
-- **`continueToNextRoom()`**: ganz am Anfang, **vor** `unlockCurrentDoor()`.
-  Diese Methode verbraucht den Schlüssel. So geht der Schlüssel nicht verloren,
-  wenn man die Tür im Dunkeln nicht findet.
-- **`return`** (zurückgehen) ist von der Dunkelheit **nicht** betroffen.
-  Den Weg zurück kennt man bereits.
+## Umsetzung im Code
+
+- `Room` speichert den Zustand in `dark`. `makeDark()` setzt ihn, `isDark()` liest ihn und `longDescription()` ergänzt den Hinweis.
+- `Game.failsInDarkness(...)` prüft, ob der Raum dunkel ist und keine eingeschaltete, geladene Taschenlampe zur Verfügung steht. Dann entscheidet der Zufall mit `SEARCH_FAIL_CHANCE` oder `CONTINUE_FAIL_CHANCE`.
+- `searchRoom()` prüft die Dunkelheit vor `collectCoins()` und `collectItems()`. So bleiben die Funde erhalten, wenn die Suche im Dunkeln scheitert.
+- Beim Weitergehen erfolgt die Dunkelheitsprüfung vor dem Entriegeln. So wird bei einem Fehlschlag weder ein Schlüssel noch ein Lockpick verbraucht.
+- `Flashlight` erbt von `Item` und verwaltet den Ladestand und den Ein/Aus-Zustand pro Lampe. `Player` greift auf die Lampe im Inventar zu.
 
 ## Tests
 
-`src/test/java/ch/bbw/zork/RoomTests.java` (6 Tests, JUnit 4):
+Die JUnit-Tests in `RoomTests.java` prüfen unter anderem den anfänglich hellen Zustand, den Hinweis in der Raumbeschreibung sowie die Unabhängigkeit von Dunkelheit, Gegenständen und Schloss. `GameTests.java` prüft Spielbefehle über simulierte Konsoleneingaben. Die zufälligen Fehlschläge durch Dunkelheit werden in diesen Tests nicht gezielt ausgelöst.
 
-| Test | prüft |
-|---|---|
-| `newRoomIsNotDark` | neuer Raum ist hell |
-| `makeDarkMakesRoomDark` | `makeDark()` macht den Raum dunkel |
-| `darkRoomDescriptionWarnsAboutDarkness` | Beschreibung enthält den Hinweis |
-| `lightRoomDescriptionHasNoDarknessWarning` | heller Raum ohne Hinweis |
-| `darkRoomStillContainsItems` | Dunkelheit löscht keine Items |
-| `makeDarkDoesNotLockRoom` | dunkel und verschlossen sind unabhängig |
-
-Der Zufall in `Game` wird nicht automatisch getestet, weil `Game` von
-`System.in` liest. Geprüft wurde er durch Spielen: `search` in Raum 3 schlägt
-manchmal fehl, mit Flashlight nie.
+Das Verhalten lässt sich im Spiel prüfen, indem du einen dunklen Raum zuerst ohne eingeschaltete Lampe und danach mit einer geladenen, eingeschalteten Lampe betrittst und `search` oder `continue` ausprobierst. Ein Versuch ohne Licht kann auch erfolgreich sein.
