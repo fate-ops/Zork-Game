@@ -24,11 +24,6 @@ public class Player {
 
     private boolean crucifixProtection = false;
 
-    private boolean flashlightOn = false;
-    private int flashlightBattery = 100;
-    private long flashlightActiveNanos = 0;
-    private long flashlightLastUpdateNanos = 0;
-
     /**
      * Erstellt einen Spieler mit vollen HP, ohne Coins und mit leerem
      * Inventar.
@@ -102,8 +97,8 @@ public class Player {
             Item item = inventory.get(i);
 
             if (item.getType() == type) {
-                if (type == ItemType.FLASHLIGHT) {
-                    turnFlashlightOff();
+                if (item instanceof Flashlight) {
+                    ((Flashlight) item).turnOff();
                 }
 
                 return inventory.remove(i);
@@ -130,128 +125,62 @@ public class Player {
         return false;
     }
 
-    /**
-     * Rechnet den Batterieverbrauch der eingeschalteten Flashlight nach.
-     * Je 30 Sekunden Leuchtzeit gehen 10 Prozentpunkte verloren. Bei 0 %
-     * schaltet sich die Lampe aus.
-     */
-    private void updateFlashlightBattery() {
-        if (!flashlightOn) {
-            return;
+
+    /** @return die erste Taschenlampe im Inventar oder null */
+    private Flashlight findFlashlight() {
+        for (Item item : inventory) {
+            if (item instanceof Flashlight) {
+                return (Flashlight) item;
+            }
         }
-
-        long now = System.nanoTime();
-
-        flashlightActiveNanos += now - flashlightLastUpdateNanos;
-        flashlightLastUpdateNanos = now;
-
-        long drainInterval = 30_000_000_000L;
-        long intervals = flashlightActiveNanos / drainInterval;
-
-        if (intervals > 0) {
-            flashlightBattery = (int) Math.max(
-                    0L,
-                    flashlightBattery - intervals * 10L
-            );
-
-            flashlightActiveNanos %= drainInterval;
-        }
-
-        if (flashlightBattery == 0) {
-            flashlightOn = false;
-            flashlightActiveNanos = 0;
-        }
+        return null;
     }
 
-    /**
-     * Gibt an, ob die Flashlight eingeschaltet und nutzbar ist.
-     *
-     * @return {@code true}, wenn der Spieler eine eingeschaltete,
-     *         geladene Flashlight besitzt
-     */
+    /** @return ob die Taschenlampe gerade leuchtet */
     public boolean isFlashlightOn() {
-        updateFlashlightBattery();
-        return flashlightOn && hasItem(ItemType.FLASHLIGHT);
+        Flashlight flashlight = findFlashlight();
+        return flashlight != null && flashlight.isOn();
     }
 
-    /**
-     * Schaltet die Flashlight ein.
-     *
-     * @return {@code true}, wenn die Flashlight jetzt an ist,
-     *         {@code false} ohne Flashlight oder bei leerer Batterie
-     */
+    /** @return ob sich die Taschenlampe einschalten liess */
     public boolean turnFlashlightOn() {
-        updateFlashlightBattery();
-
-        if (!hasItem(ItemType.FLASHLIGHT) || flashlightBattery == 0) {
-            return false;
-        }
-
-        if (!flashlightOn) {
-            flashlightLastUpdateNanos = System.nanoTime();
-            flashlightOn = true;
-        }
-
-        return true;
+        Flashlight flashlight = findFlashlight();
+        return flashlight != null && flashlight.turnOn();
     }
 
-    /**
-     * Schaltet die Flashlight aus. Der Batterieverbrauch pausiert dabei.
-     */
+    /** Schaltet die Taschenlampe aus, sofern eine vorhanden ist. */
     public void turnFlashlightOff() {
-        updateFlashlightBattery();
-        flashlightOn = false;
+        Flashlight flashlight = findFlashlight();
+        if (flashlight != null) {
+            flashlight.turnOff();
+        }
     }
 
-    /**
-     * Liefert den Ladestand der Flashlight.
-     *
-     * @return der Ladestand in Prozent von 0 bis 100
-     */
+    /** @return den Ladestand in Prozent, oder 0 ohne Taschenlampe */
     public int getFlashlightBattery() {
-        updateFlashlightBattery();
-        return flashlightBattery;
+        Flashlight flashlight = findFlashlight();
+        return flashlight == null ? 0 : flashlight.getBattery();
     }
 
-    // Eine gekaufte Flashlight ersetzt die alte und ist voll geladen.
-    /**
-     * Ersetzt die Flashlight durch eine neue. Die neue ist voll geladen
-     * und ausgeschaltet.
-     */
+    /** Ersetzt die bisherige Taschenlampe durch eine voll geladene. */
     public void replaceFlashlight() {
         removeItem(ItemType.FLASHLIGHT);
-
-        flashlightOn = false;
-        flashlightBattery = 100;
-        flashlightActiveNanos = 0;
-        flashlightLastUpdateNanos = 0;
-
-        addItem(new Item(ItemType.FLASHLIGHT, "Flashlight"));
+        addItem(new Flashlight());
     }
 
     /**
-     * Lädt die Flashlight mit einer Batterie nach. Die Batterie wird nur
-     * verbraucht, wenn eine Flashlight vorhanden und nicht voll geladen
-     * ist.
+     * Lädt die Taschenlampe mit einer Batterie nach.
      *
-     * @return die nachgeladenen Prozentpunkte, 0 wenn nichts geladen wurde
+     * @return die nachgeladenen Prozentpunkte, oder 0 ohne Aufladung
      */
     public int useBattery() {
-        updateFlashlightBattery();
-
-        if (!hasItem(ItemType.FLASHLIGHT)
-                || flashlightBattery >= 100
+        Flashlight flashlight = findFlashlight();
+        if (flashlight == null || flashlight.getBattery() == 100
                 || !removeItem(ItemType.BATTERY)) {
             return 0;
         }
 
-        int charged = Math.min(
-                BATTERY_RECHARGE,
-                100 - flashlightBattery
-        );
-
-        flashlightBattery += charged;
-        return charged;
+        return flashlight.recharge(BATTERY_RECHARGE);
     }
 
     /**
@@ -325,12 +254,13 @@ public class Player {
                     .append(item.getType())
                     .append(")");
 
-            if (item.getType() == ItemType.FLASHLIGHT) {
+            if (item instanceof Flashlight) {
+                Flashlight flashlight = (Flashlight) item;
                 description
                         .append(" - Battery: ")
-                        .append(getFlashlightBattery())
+                        .append(flashlight.getBattery())
                         .append("%, ")
-                        .append(isFlashlightOn() ? "ON" : "OFF");
+                        .append(flashlight.isOn() ? "ON" : "OFF");
             }
 
             description.append("\n");
