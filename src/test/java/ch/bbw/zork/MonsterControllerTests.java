@@ -144,4 +144,90 @@ public class MonsterControllerTests {
         assertTrue(controller.handleCommand(new Command("unhide")));
         assertFalse(controller.isHidden());
     }
+
+
+    /**
+     * Mit peek innerhalb der Frist verschwindet Screech ohne Schaden.
+     */
+    @Test
+    public void peekScaresScreechAway() {
+        MonsterController controller = controllerWith(0);
+        controller.onEnter(room(3, true));
+
+        assertTrue(controller.handleCommand(new Command("peek")));
+
+        now = 4 * SECOND;
+
+        assertFalse(controller.update());
+        assertEquals(Player.MAX_HP, player.getHp());
+    }
+
+    /**
+     * Wer nicht rechtzeitig peekt, verliert 40 HP durch Screech.
+     */
+    @Test
+    public void lateScreechCostsFortyHp() {
+        MonsterController controller = controllerWith(0);
+        controller.onEnter(room(3, true));
+
+        now = 4 * SECOND;
+
+        assertTrue(controller.update());
+        assertEquals(Player.MAX_HP - 40, player.getHp());
+        assertTrue(player.isAlive());
+    }
+
+    /**
+     * Ein aktives Crucifix blockiert den tödlichen Treffer von Rush.
+     */
+    @Test
+    public void crucifixBlocksRush() {
+        player.addItem(new Item(ItemType.CRUCIFIX, "Crucifix"));
+        assertTrue(player.activateCrucifix());
+
+        MonsterController controller = controllerWith(0);
+        controller.onEnter(room(5, false));
+
+        now = 7 * SECOND;
+
+        assertTrue(controller.update());
+        assertTrue(player.isAlive());
+        assertEquals(Player.MAX_HP, player.getHp());
+        assertFalse(player.hasCrucifixProtection());
+    }
+
+    /**
+     * Wer sich nach der Warnung von Figure nicht versteckt, stirbt nach
+     * vier Sekunden.
+     */
+    @Test
+    public void figureKillsPlayerWhoDoesNotHide() {
+        MonsterController controller = controllerWith(99);
+        controller.warnFigure();
+
+        assertTrue(controller.blocksMovement());
+
+        now = 5 * SECOND;
+
+        assertTrue(controller.update());
+        assertFalse(player.isAlive());
+    }
+
+    /**
+     * Wer sich vor Figure versteckt, ueberlebt und bleibt bis zum unhide
+     * im Versteck.
+     */
+    @Test
+    public void hidingProtectsFromFigure() {
+        MonsterController controller = controllerWith(99);
+        controller.warnFigure();
+
+        assertTrue(controller.handleCommand(new Command("hide")));
+
+        now = 5 * SECOND;
+
+        assertTrue(controller.update());
+        assertTrue(player.isAlive());
+        assertTrue(controller.isHidden());
+    }
 }
