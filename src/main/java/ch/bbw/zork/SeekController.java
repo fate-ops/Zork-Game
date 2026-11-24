@@ -65,6 +65,12 @@ public class SeekController {
         this.clock = clock;
     }
 
+    /**
+     * Startet die Verfolgung mit der Cutscene. Wurde Seek schon gestartet
+     * oder besiegt, passiert nichts.
+     *
+     * @param room der Raum, in dem die Verfolgung beginnt (Raum 35)
+     */
     public void start(Room room) {
         if (isRunning() || completed) {
             return;
@@ -83,6 +89,13 @@ public class SeekController {
         );
     }
 
+    /**
+     * Schaltet die Cutscene weiter und prüft das Zeitlimit. Läuft die Zeit
+     * ab, wird der Spieler gefangen, ausser ein Crucifix schützt ihn. Dann
+     * erhält er zehn zusätzliche Sekunden.
+     *
+     * @return {@code true}, wenn dabei eine Meldung ausgegeben wurde
+     */
     public boolean update() {
         long now = clock.getAsLong();
         boolean changed = false;
@@ -156,6 +169,17 @@ public class SeekController {
         return changed;
     }
 
+    /**
+     * Verarbeitet Befehle während der Verfolgung. Mit {@code left} und
+     * {@code right} wählt der Spieler eine Tür. Eine falsche Wahl kostet
+     * fünf Sekunden, die richtige führt in den nächsten Raum. Befehle
+     * wie {@code use}, {@code status}, {@code inventory} und {@code help}
+     * sind weiterhin erlaubt, alle anderen werden blockiert.
+     *
+     * @param command der eingegebene Befehl
+     * @return {@code true}, wenn der Befehl hier behandelt wurde und das
+     *         Spiel ihn nicht weiter bearbeiten soll
+     */
     public boolean handleCommand(Command command) {
         update();
 
