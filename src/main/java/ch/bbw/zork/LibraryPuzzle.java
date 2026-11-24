@@ -90,10 +90,25 @@ public final class LibraryPuzzle {
         }
     }
 
+    /**
+     * Prüft, ob eine Eingabe genau aus sechs Ziffern besteht.
+     *
+     * @param attempt die eingegebene Zeichenfolge
+     * @return {@code true}, wenn es genau sechs Ziffern sind
+     *         (führende Nullen erlaubt), sonst {@code false}
+     */
     public boolean isValidPinFormat(String attempt) {
         return attempt != null && attempt.matches("[0-9]{" + PIN_LENGTH + "}");
     }
 
+    /**
+     * Versucht, das Great Gate mit einem PIN zu öffnen und gibt das
+     * Ergebnis aus.
+     *
+     * @param attempt der eingegebene PIN
+     * @return {@code true}, wenn der PIN stimmt und das Spiel gewonnen ist,
+     *         {@code false} bei falschem Format oder falschem PIN
+     */
     public boolean tryCode(String attempt) {
         if (!isValidPinFormat(attempt)) {
             System.out.println("Use: code <six digits>. Include any leading zero.");
@@ -110,6 +125,9 @@ public final class LibraryPuzzle {
         return true;
     }
 
+    /**
+     * Ein Hinweis aus einem Buch: ein Symbol und die dazugehörige Ziffer.
+     */
     private static final class Clue {
         private final String symbol;
         private final int digit;
