@@ -49,10 +49,20 @@ public final class LibraryPuzzle {
         Collections.shuffle(remainingBooks, random);
     }
 
+    /**
+     * Gibt die sechs PIN-Symbole in der richtigen Reihenfolge aus.
+     */
     public void showSource() {
         System.out.println("PIN order: " + String.join(" -> ", symbolOrder));
     }
 
+    /**
+     * Findet ein neues Buch und notiert dessen Hinweis (Symbol und Ziffer).
+     * Jedes der acht Bücher kann nur einmal gefunden werden.
+     *
+     * @return {@code true}, wenn ein neues Buch gefunden wurde,
+     *         {@code false}, wenn bereits alle Bücher gefunden sind
+     */
     public boolean findBook() {
         if (remainingBooks.isEmpty()) {
             System.out.println("You have already found all eight books. Check your notes.");
@@ -65,6 +75,9 @@ public final class LibraryPuzzle {
         return true;
     }
 
+    /**
+     * Gibt alle bisher gefundenen Hinweise aus.
+     */
     public void showNotes() {
         if (notes.isEmpty()) {
             System.out.println("You haven't found any clues yet.");
